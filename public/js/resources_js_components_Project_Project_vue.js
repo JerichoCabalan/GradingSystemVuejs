@@ -333,8 +333,6 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
-//
-//
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
   name: "Dashboard",
   data: function data() {
@@ -679,7 +677,7 @@ var render = function() {
         ])
       ]),
       _vm._v(" "),
-      _c("div", { staticClass: "container-fluid mt--6" }, [
+      _c("div", { staticClass: "container-fluid " }, [
         _c("div", { staticClass: "row" }, [
           _c("div", { staticClass: "col" }, [
             _c("div", { staticClass: "card", attrs: { id: "deleteLoading" } }, [
@@ -1023,11 +1021,7 @@ var staticRenderFns = [
           _vm._v("Final")
         ]),
         _vm._v(" "),
-        _c("th", { staticClass: "sort", attrs: { scope: "col" } }, [
-          _vm._v(
-            "\n                                        Total Grade\n                                    "
-          )
-        ])
+        _c("th", { staticClass: "sort", attrs: { scope: "col" } })
       ])
     ])
   },

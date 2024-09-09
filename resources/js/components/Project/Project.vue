@@ -21,7 +21,7 @@
                 </div>
             </div>
         </div>
-        <div class="container-fluid mt--6">
+        <div class="container-fluid ">
             <div class="row">
                 <div class="col">
                     <div class="card" id="deleteLoading">
@@ -51,9 +51,7 @@
                                             Midterm
                                         </th>
                                         <th scope="col" class="sort">Final</th>
-                                        <th scope="col" class="sort">
-                                            Total Grade
-                                        </th>
+                                        <th scope="col" class="sort"></th>
                                     </tr>
                                 </thead>
                                 <tbody
