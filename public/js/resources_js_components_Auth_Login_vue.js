@@ -79,13 +79,45 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
   name: "Login",
   data: function data() {
     return {
       loginData: {
-        email: '',
-        password: ''
+        email: "",
+        password: ""
       }
     };
   },
@@ -93,11 +125,11 @@ __webpack_require__.r(__webpack_exports__);
     login: function login() {
       var _this = this;
 
-      var loading = this.block('loginLoader');
-      this.axios.post('api/v1/login', this.loginData).then(function (response) {
+      var loading = this.block("loginLoader");
+      this.axios.post("api/v1/login", this.loginData).then(function (response) {
         if (response.data.status === true) {
           loading.close();
-          window.location.href = '/dashboard';
+          window.location.href = "/dashboard";
         } else {
           _this.errorNotification(response.data.message);
 
@@ -203,41 +235,7 @@ var render = function() {
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
   return _c("div", [
-    _c(
-      "div",
-      { staticClass: "header bg-gradient-primary py-3 py-lg-8 pt-lg-9" },
-      [
-        _vm._m(0),
-        _vm._v(" "),
-        _c(
-          "div",
-          {
-            staticClass: "separator separator-bottom separator-skew zindex-100"
-          },
-          [
-            _c(
-              "svg",
-              {
-                attrs: {
-                  x: "0",
-                  y: "0",
-                  viewBox: "0 0 2560 100",
-                  preserveAspectRatio: "none",
-                  version: "1.1",
-                  xmlns: "http://www.w3.org/2000/svg"
-                }
-              },
-              [
-                _c("polygon", {
-                  staticClass: "fill-default",
-                  attrs: { points: "2560 0 2560 100 0 100" }
-                })
-              ]
-            )
-          ]
-        )
-      ]
-    ),
+    _vm._m(0),
     _vm._v(" "),
     _c("div", { staticClass: "container mt--8 pb-5" }, [
       _c("div", { staticClass: "row justify-content-center" }, [
@@ -245,7 +243,7 @@ var render = function() {
           _c(
             "div",
             {
-              staticClass: "card bg-secondary border-0 mb-0",
+              staticClass: "card  border-0 mb-0",
               attrs: { id: "loginLoader" }
             },
             [
@@ -272,8 +270,6 @@ var render = function() {
                             "input-group input-group-merge input-group-alternative"
                         },
                         [
-                          _vm._m(2),
-                          _vm._v(" "),
                           _c("input", {
                             directives: [
                               {
@@ -315,8 +311,6 @@ var render = function() {
                             "input-group input-group-merge input-group-alternative"
                         },
                         [
-                          _vm._m(3),
-                          _vm._v(" "),
                           _c("input", {
                             directives: [
                               {
@@ -349,7 +343,7 @@ var render = function() {
                       )
                     ]),
                     _vm._v(" "),
-                    _vm._m(4)
+                    _vm._m(2)
                   ]
                 )
               ])
@@ -398,47 +392,32 @@ var staticRenderFns = [
     var _vm = this
     var _h = _vm.$createElement
     var _c = _vm._self._c || _h
-    return _c("div", { staticClass: "container" }, [
-      _c("div", { staticClass: "header-body text-center mb-7" }, [
-        _c("div", { staticClass: "row justify-content-center" }, [
-          _c("div", { staticClass: "col-xl-5 col-lg-6 col-md-8 px-5" }, [
-            _c("h1", { staticClass: "text-white" }, [_vm._v("Welcome!")]),
-            _vm._v(" "),
-            _c("p", { staticClass: "text-lead text-white" }, [
-              _vm._v("Login Your account in your project for free.")
+    return _c(
+      "div",
+      {
+        staticClass: "header py-3 py-lg-8 pt-lg-9",
+        staticStyle: { "background-color": "green" }
+      },
+      [
+        _c("div", { staticClass: "container" }, [
+          _c("div", { staticClass: "header-body text-center mb-7" }, [
+            _c("div", { staticClass: "row justify-content-center" }, [
+              _c("div", { staticClass: "col-xl-5 col-lg-6 col-md-8 px-5" }, [
+                _c("p", { staticClass: "text-lead text-white" })
+              ])
             ])
           ])
         ])
-      ])
-    ])
+      ]
+    )
   },
   function() {
     var _vm = this
     var _h = _vm.$createElement
     var _c = _vm._self._c || _h
-    return _c("div", { staticClass: "card-header bg-transparent" }, [
+    return _c("div", { staticClass: "card-header " }, [
       _c("div", { staticClass: "text-muted text-center mt-2 h1" }, [
         _vm._v("\n                            Login\n                        ")
-      ])
-    ])
-  },
-  function() {
-    var _vm = this
-    var _h = _vm.$createElement
-    var _c = _vm._self._c || _h
-    return _c("div", { staticClass: "input-group-prepend" }, [
-      _c("span", { staticClass: "input-group-text" }, [
-        _c("i", { staticClass: "ni ni-email-83" })
-      ])
-    ])
-  },
-  function() {
-    var _vm = this
-    var _h = _vm.$createElement
-    var _c = _vm._self._c || _h
-    return _c("div", { staticClass: "input-group-prepend" }, [
-      _c("span", { staticClass: "input-group-text" }, [
-        _c("i", { staticClass: "ni ni-lock-circle-open" })
       ])
     ])
   },
@@ -450,7 +429,11 @@ var staticRenderFns = [
       _c(
         "button",
         { staticClass: "btn btn-primary my-4", attrs: { type: "submit" } },
-        [_vm._v("Login")]
+        [
+          _vm._v(
+            "\n                                    Login\n                                "
+          )
+        ]
       )
     ])
   }

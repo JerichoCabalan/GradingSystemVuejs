@@ -52,10 +52,18 @@ export const routes = [
         component: () => import("./components/Layout/Layout"),
         children: [
             {
+                path: "/dashboard",
+                name: "dashboard",
+                meta: {
+                    title: "My Dashboard | Vue Dashboard"
+                },
+                component: () => import("./components/Dashboard/Dashboard")
+            },
+            {
                 path: "/project",
                 name: "project",
                 meta: {
-                    title: "Compute Grade | Vue Dashboard"
+                    title: "Compute grade | Vue Dashboard"
                 },
                 component: () => import("./components/Project/Project")
             },
@@ -68,7 +76,14 @@ export const routes = [
                 },
                 component: () => import("./components/Profile/Profile")
             },
-
+            {
+                path: "/setting",
+                name: "setting",
+                meta: {
+                    title: "Setting | Vue Dashboard"
+                },
+                component: () => import("./components/Setting/Setting")
+            },
             {
                 path: "/logout",
                 name: "logout",

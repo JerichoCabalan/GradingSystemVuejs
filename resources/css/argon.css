@@ -14644,8 +14644,7 @@ button.bg-darker:focus {
     color: #fff !important;
 }
 
-.text-primary
-{
+.text-primary {
     color: #fff !important;
 }
 
@@ -20061,12 +20060,12 @@ button.bg-lighter:focus {
 }
 
 .bg-gradient-primary {
-    background: linear-gradient(87deg, #5e72e4 0, #825ee4 100%) !important;
+    background-color: green !important;
 }
 
-.bg-gradient-secondary {
+/* .bg-gradient-secondary {
     background: linear-gradient(87deg, #f7fafc 0, #f7f8fc 100%) !important;
-}
+} */
 
 .bg-gradient-success {
     background: linear-gradient(87deg, #2dce89 0, #2dcecc 100%) !important;
@@ -20356,15 +20355,15 @@ button.section-darker:focus {
 }
 
 .bg-gradient-primary {
-    background: linear-gradient(87deg, #5e72e4 0, #825ee4 100%) !important;
+    background-color: green !important;
 }
 
-.bg-gradient-secondary {
+/* .bg-gradient-secondary {
     background: linear-gradient(87deg, #f7fafc 0, #f7f8fc 100%) !important;
-}
+} */
 
 .bg-gradient-success {
-    background: linear-gradient(87deg, #2dce89 0, #2dcecc 100%) !important;
+    background-color: green !important;
 }
 
 .bg-gradient-info {

@@ -1,6 +1,6 @@
 <template>
     <div>
-        <div class="header bg-primary pb-6">
+        <!-- <div class="header bg-primary pb-6">
             <div class="container-fluid">
                 <div class="header-body">
                     <div class="row align-items-center py-4">
@@ -9,18 +9,11 @@
                                 Compute Grade
                             </h6>
                         </div>
-                        <div class="col-lg-6 col-5 text-right">
-                            <a
-                                href="#"
-                                class="btn btn-sm btn-neutral"
-                                @click="addProjectModel = !addProjectModel"
-                                >Import Excel</a
-                            >
-                        </div>
+                       
                     </div>
                 </div>
             </div>
-        </div>
+        </div> -->
         <div class="container-fluid ">
             <div class="row">
                 <div class="col">

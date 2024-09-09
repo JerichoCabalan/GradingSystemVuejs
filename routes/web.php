@@ -17,40 +17,30 @@ Route::group(['prefix'=>'api/v1'],function (){
 });
 Route::group(['prefix'=>'api/v1','middleware'=>'auth'],function (){
     Route::get('/get/user/info',[\App\Http\Controllers\UserController::class, 'getUserInfo']);
-    //Basic Info Navbar
+    Route::get('/logout',[\App\Http\Controllers\AuthController::class, 'logout']);
     Route::get('/profile/info', [\App\Http\Controllers\UserController::class, 'getProfileInfo']);
-
-    //Verify
     Route::get('/sendVerifyMail',[\App\Http\Controllers\AuthController::class,'SendVerifyMail']);
-
-    //Dashboard
-    Route::get('/count', [\App\Http\Controllers\DashboardController::class, 'getCount']);
-
-    //Project
     Route::get('/projects', [\App\Http\Controllers\ProjectController::class, 'getProject']);
     Route::post('/add/project', [\App\Http\Controllers\ProjectController::class, 'addProject']);
     Route::get('/get/project/{id}', [\App\Http\Controllers\ProjectController::class, 'getSingleProject']);
     Route::put('/update/project', [\App\Http\Controllers\ProjectController::class, 'updateProject']);
     Route::delete('/delete/project/{id}', [\App\Http\Controllers\ProjectController::class, 'deleteProject']);
 
-    //Task
-    Route::get('/tasks', [\App\Http\Controllers\TaskController::class, 'getTask']);
-    Route::post('/add/task', [\App\Http\Controllers\TaskController::class, 'addTask']);
-    Route::get('/get/task/{id}', [\App\Http\Controllers\TaskController::class, 'getSingleTask']);
-    Route::put('/update/task', [\App\Http\Controllers\TaskController::class, 'updateTask']);
-    Route::delete('/delete/task/{id}', [\App\Http\Controllers\TaskController::class, 'deleteTask']);
-
-    //Profile
     Route::get('/profile', [\App\Http\Controllers\UserController::class, 'getProfile']);
     Route::post('/update/profile/pic',[\App\Http\Controllers\UserController::class, 'updateProfilePic']);
     Route::put('/update/profile', [\App\Http\Controllers\UserController::class, 'updateProfileInformation']);
 
-    //setting
+ 
     Route::get('/notification', [\App\Http\Controllers\UserController::class, 'getNotification']);
     Route::post('/change_password', [\App\Http\Controllers\UserController::class, 'changePassword']);
     Route::post('/update/notification', [\App\Http\Controllers\UserController::class, 'updateNotification']);
 
-    //Auth
-    Route::get('/logout',[\App\Http\Controllers\AuthController::class, 'logout']);
+
+    Route::get('/compute_grades', [\App\Http\Controllers\ComputeGradeController::class, 'compute_grades']);
+
+    Route::post('/import_excel_classrecord', [\App\Http\Controllers\ComputeGradeController::class, 'import_excel_classrecord']);
+
+
+
 
 });

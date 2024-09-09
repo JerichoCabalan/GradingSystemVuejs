@@ -25,9 +25,9 @@ __webpack_require__.r(__webpack_exports__);
   beforeMount: function beforeMount() {
     this.axios.get("api/v1/auth/check").then(function (response) {
       if (response.data.status === true) {
-        window.location.href = '/dashboard';
+        window.location.href = "/dashboard";
       } else {
-        window.location.href = '/login';
+        window.location.href = "/login";
       }
     })["catch"](function (error) {});
   }
@@ -52,7 +52,7 @@ __webpack_require__.r(__webpack_exports__);
 
 var ___CSS_LOADER_EXPORT___ = _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_0___default()(function(i){return i[1]});
 // Module
-___CSS_LOADER_EXPORT___.push([module.id, "\n.main-content{\r\n    background-color: #172b4d;\n}\r\n", ""]);
+___CSS_LOADER_EXPORT___.push([module.id, "\n.main-content {\r\n    background-color: green;\n}\r\n", ""]);
 // Exports
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (___CSS_LOADER_EXPORT___);
 

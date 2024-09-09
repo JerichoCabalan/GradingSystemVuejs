@@ -326,13 +326,6 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
-//
-//
-//
-//
-//
-//
-//
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
   name: "Dashboard",
   data: function data() {
@@ -651,37 +644,11 @@ var render = function() {
   return _c(
     "div",
     [
-      _c("div", { staticClass: "header bg-primary pb-6" }, [
-        _c("div", { staticClass: "container-fluid" }, [
-          _c("div", { staticClass: "header-body" }, [
-            _c("div", { staticClass: "row align-items-center py-4" }, [
-              _vm._m(0),
-              _vm._v(" "),
-              _c("div", { staticClass: "col-lg-6 col-5 text-right" }, [
-                _c(
-                  "a",
-                  {
-                    staticClass: "btn btn-sm btn-neutral",
-                    attrs: { href: "#" },
-                    on: {
-                      click: function($event) {
-                        _vm.addProjectModel = !_vm.addProjectModel
-                      }
-                    }
-                  },
-                  [_vm._v("Import Excel")]
-                )
-              ])
-            ])
-          ])
-        ])
-      ]),
-      _vm._v(" "),
       _c("div", { staticClass: "container-fluid " }, [
         _c("div", { staticClass: "row" }, [
           _c("div", { staticClass: "col" }, [
             _c("div", { staticClass: "card", attrs: { id: "deleteLoading" } }, [
-              _vm._m(1),
+              _vm._m(0),
               _vm._v(" "),
               _c(
                 "div",
@@ -694,7 +661,7 @@ var render = function() {
                     "table",
                     { staticClass: "table align-items-center table-flush" },
                     [
-                      _vm._m(2),
+                      _vm._m(1),
                       _vm._v(" "),
                       _vm._l(_vm.items, function(item) {
                         return _c(
@@ -864,7 +831,7 @@ var render = function() {
                                             staticClass: "far fa-edit"
                                           }),
                                           _vm._v(" "),
-                                          _vm._m(3, true)
+                                          _vm._m(2, true)
                                         ]
                                       ),
                                       _vm._v(" "),
@@ -884,7 +851,7 @@ var render = function() {
                                             staticClass: "fas fa-trash-alt"
                                           }),
                                           _vm._v(" "),
-                                          _vm._m(4, true)
+                                          _vm._m(3, true)
                                         ]
                                       )
                                     ])
@@ -896,7 +863,7 @@ var render = function() {
                         )
                       }),
                       _vm._v(" "),
-                      _vm.dataNotFound ? _c("tbody", [_vm._m(5)]) : _vm._e()
+                      _vm.dataNotFound ? _c("tbody", [_vm._m(4)]) : _vm._e()
                     ],
                     2
                   )
@@ -963,18 +930,6 @@ var render = function() {
   )
 }
 var staticRenderFns = [
-  function() {
-    var _vm = this
-    var _h = _vm.$createElement
-    var _c = _vm._self._c || _h
-    return _c("div", { staticClass: "col-lg-6 col-7" }, [
-      _c("h6", { staticClass: "h2 text-white d-inline-block mb-0" }, [
-        _vm._v(
-          "\n                            Compute Grade\n                        "
-        )
-      ])
-    ])
-  },
   function() {
     var _vm = this
     var _h = _vm.$createElement
