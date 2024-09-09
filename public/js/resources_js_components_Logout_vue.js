@@ -18,12 +18,14 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
   name: "Logout",
   mounted: function mounted() {
-    this.axios.get('api/logout').then(function (response) {
+    var _this = this;
+
+    this.axios.get('api/v1/logout').then(function (response) {
       if (response.data.status === true) {
         document.location.href = '/login';
       }
     })["catch"](function (error) {
-      alert(error.response.data.message);
+      _this.errorNotification(error.response.data.message);
     });
   }
 });

@@ -8769,7 +8769,7 @@ a.close.disabled
 
 .bg-primary
 {
-    background-color: #5e72e4 !important;
+    background-color: #197403 !important;
 }
 
 a.bg-primary:hover,
@@ -8983,10 +8983,10 @@ button.bg-darker:focus
     border-left: 0 !important;
 }
 
-.border-primary
+/* .border-primary
 {
     border-color: #5e72e4 !important;
-}
+} */
 
 .border-secondary
 {
@@ -17749,7 +17749,7 @@ button.bg-darker:focus
 
 .text-primary
 {
-    color: #5e72e4 !important;
+    color: #fff !important;
 }
 
 a.text-primary:hover,
@@ -23958,7 +23958,7 @@ h6 > a
 
 .bg-blue
 {
-    background-color: #5e72e4 !important;
+    background-color: #197403 !important;
 }
 
 a.bg-blue:hover,
@@ -25544,10 +25544,10 @@ button.section-darker:focus
     letter-spacing: .125rem;
 }
 
-.text-blue
+/* .text-blue
 {
     color: #5e72e4 !important;
-}
+} */
 
 a.text-blue:hover,
 a.text-blue:focus
