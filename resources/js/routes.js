@@ -52,20 +52,13 @@ export const routes = [
         component: () => import("./components/Layout/Layout"),
         children: [
             {
-                path: "/dashboard",
-                name: "dashboard",
-                meta: {
-                    title: "My Dashboard | Vue Dashboard"
-                },
-                component: () => import("./components/Dashboard/Dashboard")
-            },
-            {
-                path: "/project",
-                name: "project",
+                path: "/compute-grade",
+                name: "compute-grade",
                 meta: {
                     title: "Compute grade | Vue Dashboard"
                 },
-                component: () => import("./components/Project/Project")
+                component: () =>
+                    import("./components/ComputeGrade/ComputeGrade")
             },
 
             {

@@ -37,6 +37,7 @@ Route::group(['prefix'=>'api/v1','middleware'=>'auth'],function (){
 
 
     Route::get('/compute_grades', [\App\Http\Controllers\ComputeGradeController::class, 'compute_grades']);
+    Route::get('/grades', [\App\Http\Controllers\ComputeGradeController::class, 'getGrades']);
 
     Route::post('/import_excel_classrecord', [\App\Http\Controllers\ComputeGradeController::class, 'import_excel_classrecord']);
 

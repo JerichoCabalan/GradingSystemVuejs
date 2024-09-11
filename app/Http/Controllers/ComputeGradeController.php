@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+
+use App\Imports\ComputeGradeImport;
 use App\Models\ComputeGrade;
 use Illuminate\Http\Request;
 use Maatwebsite\Excel\Facades\Excel;
@@ -89,7 +91,7 @@ class ComputeGradeController extends Controller
     {
         $file = $request->file('file');
 
-        $import = new ComputeGrade();
+        $import = new ComputeGradeImport();
 
         Excel::import($import, $file);
 
@@ -97,7 +99,10 @@ class ComputeGradeController extends Controller
 
         return response()->json($message);
     }
-    
-}        // Import the Excel file
-        // Get the message from the import
-        // Return a JSON response with the message
+
+    public function getGrades()
+    {
+        $grades = ComputeGrade::all(); 
+        return response()->json($grades, 200); 
+    }
+}

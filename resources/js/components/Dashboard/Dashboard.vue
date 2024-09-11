@@ -3,16 +3,12 @@
         <div class="header bg-primary pb-6">
             <div class="container-fluid"></div>
         </div>
-        <div class="container-fluid mt--6">
-            <ProductTable></ProductTable>
-        </div>
+        <div class="container-fluid mt--6"></div>
     </div>
 </template>
 
 <script>
-import ProductTable from "./ProductTable";
 export default {
-    name: "Dashboard",
-    components: { ProductTable }
+    name: "Dashboard"
 };
 </script>

@@ -149,362 +149,67 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
   name: "Dashboard",
   data: function data() {
     return {
-      addPostData: {
-        name: null,
-        budget: null,
-        status: null,
-        completion: null,
-        responsible_user: null
-      },
-      editPostData: {
-        id: null,
-        name: null,
-        budget: null,
-        status: null,
-        completion: null,
-        responsible_user: null
-      },
-      deletePostData: {
-        id: null
-      },
-      // items: [
-      //     {
-      //         id: 1,
-      //         name: "Project Alpha",
-      //         budget: 5000,
-      //         responsible_user: "John Doe",
-      //         status: "PENDING",
-      //         completion: 30,
-      //         created_at: "2024-09-01"
-      //     },
-      //     {
-      //         id: 2,
-      //         name: "Project Beta",
-      //         budget: 12000,
-      //         responsible_user: "Jane Smith",
-      //         status: "COMPLETED",
-      //         completion: 100,
-      //         created_at: "2024-08-15"
-      //     },
-      //     {
-      //         id: 3,
-      //         name: "Project Gamma",
-      //         budget: 8000,
-      //         responsible_user: "Mark Lee",
-      //         status: "SCHEDULE",
-      //         completion: 70,
-      //         created_at: "2024-07-10"
-      //     }
-      // ],
       addProjectModel: false,
-      editProjectModel: false,
-      activeTooltip1: false,
-      deleteDialog: false,
-      dataNotFound: false
+      // For opening/closing the modal
+      selectedFile: null,
+      // Store the selected file
+      uploadMessage: null,
+      // To store success/error messages
+      grades: [] // Store the grades fetched from the API
+
     };
   },
   methods: {
-    getProject: function getProject() {
+    onFileChange: function onFileChange(event) {
+      this.selectedFile = event.target.files[0]; // Storing the selected file
+    },
+    submitExcelFile: function submitExcelFile() {
       var _this = this;
 
-      var loading = this.block("projectLoading");
-      this.axios.get("/api/v1/projects").then(function (response) {
-        _this.items = response.data.data;
-        console.log(response.data.data);
-        _this.dataNotFound = false;
-        loading.close();
-      })["catch"](function (error) {
-        _this.items = null;
-        _this.dataNotFound = true;
-        console.log(error.response.data);
-        loading.close();
-      });
-    },
-    addProject: function addProject() {
-      var _this2 = this;
-
-      var Loading = this.block("addProjectForm");
-      this.axios.post("api/v1/add/project", this.addPostData).then(function (response) {
-        if (response.data.status === true) {
-          _this2.$refs.resetForm.reset();
-
-          Loading.close();
-          _this2.addProjectModel = false;
-
-          _this2.getProject();
-        } else {
-          _this2.errorNotification(response.data.message);
-
-          Loading.close();
-        }
-      })["catch"](function (error) {
-        _this2.errorNotification(error.response.data.message);
-
-        Loading.close();
-      });
-    },
-    updateProject: function updateProject() {
-      var _this3 = this;
-
-      var Loading = this.block("editProjectForm");
-      this.axios.put("/api/v1/update/project", this.editPostData).then(function (response) {
-        _this3.editProjectModel = false;
-
-        _this3.successNotification(response.data.message);
-
-        Loading.close();
-
-        _this3.getProject();
-      })["catch"](function (error) {
-        _this3.editProjectModel = false;
-
-        _this3.errorNotification(error.response.data.message);
-
-        Loading.close();
-      });
-    },
-    onChangeStatus: function onChangeStatus(event) {
-      this.addPostData.status = event.target.value;
-    },
-    onEditChangeStatus: function onEditChangeStatus(event) {
-      this.editPostData.status = event.target.value;
-    },
-    deleteBtn: function deleteBtn(id) {
-      if (id == "") {
-        this.errorNotification("Something we Wrong..");
+      if (!this.selectedFile) {
+        this.uploadMessage = "Please select a file before uploading.";
+        return;
       }
 
-      this.deleteDialog = true;
-      this.deletePostData.id = id;
-    },
-    deleteProject: function deleteProject() {
-      var _this4 = this;
+      var formData = new FormData();
+      formData.append("file", this.selectedFile); // Add the file to FormData
+      // Submit the file using axios
 
-      var Loading = this.block("deleteLoading");
-      this.axios["delete"]("/api/v1/delete/project/" + this.deletePostData.id).then(function (response) {
-        if (response.data.status === true) {
-          _this4.deleteDialog = false;
-
-          _this4.successNotification(response.data.message);
-
-          _this4.getProject();
-
-          Loading.close();
-        } else {
-          _this4.deleteDialog = false;
-
-          _this4.errorNotification(response.data.message);
-
-          Loading.close();
+      this.axios.post("/api/v1/import_excel_classrecord", formData, {
+        headers: {
+          "Content-Type": "multipart/form-data"
         }
-      })["catch"](function (error) {
-        _this4.deleteDialog = false;
-        Loading.close();
+      }).then(function (response) {
+        // If the upload is successful
+        _this.uploadMessage = response.data.message;
+        _this.addProjectModel = false; // Close the modal
 
-        _this4.errorNotification(error.response.data.message);
+        _this.selectedFile = null; // Clear the file input
+
+        _this.getGrades(); // Fetch and refresh the grades data
+
+      })["catch"](function (error) {
+        // Handle errors and show message
+        _this.uploadMessage = error.response.data.message || "Error uploading file.";
       });
     },
-    editBtn: function editBtn(id) {
-      var _this5 = this;
+    getGrades: function getGrades() {
+      var _this2 = this;
 
-      this.editPostData.id = id;
-      this.editProjectModel = true;
-      this.axios.get("/api/v1/get/project/" + id).then(function (response) {
-        var item = response.data.data;
-        _this5.editPostData.name = item.name;
-        _this5.editPostData.budget = item.budget;
-        _this5.editPostData.completion = item.completion;
-        _this5.editPostData.responsible_user = item.responsible_user;
-        _this5.editPostData.status = item.status;
-        _this5.$refs.getStatus.value = item.status;
+      // Fetch the grades from the backend API
+      this.axios.get("/api/v1/grades").then(function (response) {
+        _this2.grades = response.data; // Set the grades to be displayed in the table
       })["catch"](function (error) {
-        console.log(error.response.data);
+        _this2.uploadMessage = error.response.data.message || "Error fetching grades.";
       });
     }
   },
   mounted: function mounted() {
-    this.getProject();
+    this.getGrades(); // Fetch grades when the component is mounted
   }
 });
 
@@ -527,7 +232,7 @@ __webpack_require__.r(__webpack_exports__);
 
 var ___CSS_LOADER_EXPORT___ = _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_0___default()(function(i){return i[1]});
 // Module
-___CSS_LOADER_EXPORT___.push([module.id, "\n.btn i:not(:last-child),\r\n.btn svg:not(:last-child) {\r\n    margin-right: unset;\n}\r\n", ""]);
+___CSS_LOADER_EXPORT___.push([module.id, "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\r\n/* Add your styles here */\n.modal {\r\n    background-color: rgba(0, 0, 0, 0.5);\n}\r\n", ""]);
 // Exports
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (___CSS_LOADER_EXPORT___);
 
@@ -641,305 +346,215 @@ var render = function() {
   var _vm = this
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
-  return _c(
-    "div",
-    [
-      _c("div", { staticClass: "container-fluid " }, [
-        _c("div", { staticClass: "row" }, [
-          _c("div", { staticClass: "col" }, [
-            _c("div", { staticClass: "card", attrs: { id: "deleteLoading" } }, [
-              _vm._m(0),
-              _vm._v(" "),
-              _c(
-                "div",
-                {
-                  staticClass: "table-responsive",
-                  attrs: { id: "projectLoading" }
-                },
-                [
+  return _c("div", [
+    _c("div", { staticClass: "container-fluid" }, [
+      _c("div", { staticClass: "row" }, [
+        _c("div", { staticClass: "col" }, [
+          _c("div", { staticClass: "card" }, [
+            _c("div", { staticClass: "card-header border-0" }, [
+              _c("div", { staticClass: "row align-items-center" }, [
+                _vm._m(0),
+                _vm._v(" "),
+                _c("div", { staticClass: "col text-right" }, [
                   _c(
-                    "table",
-                    { staticClass: "table align-items-center table-flush" },
-                    [
-                      _vm._m(1),
-                      _vm._v(" "),
-                      _vm._l(_vm.items, function(item) {
-                        return _c(
-                          "tbody",
-                          { key: item.id, staticClass: "list" },
-                          [
-                            _c("tr", [
-                              _c("th", { attrs: { scope: "row" } }, [
-                                _c(
-                                  "div",
-                                  { staticClass: "media align-items-center" },
-                                  [
-                                    _c("div", { staticClass: "media-body" }, [
-                                      _c(
-                                        "span",
-                                        { staticClass: "name mb-0 text-sm" },
-                                        [_vm._v(_vm._s(item.name))]
-                                      )
-                                    ])
-                                  ]
-                                )
-                              ]),
-                              _vm._v(" "),
-                              _c("td", { staticClass: "budget" }, [
-                                _vm._v(
-                                  "\n                                        " +
-                                    _vm._s(item.budget) +
-                                    "\n                                    "
-                                )
-                              ]),
-                              _vm._v(" "),
-                              _c("td", [
-                                _vm._v(
-                                  "\n                                        " +
-                                    _vm._s(item.responsible_user) +
-                                    "\n                                    "
-                                )
-                              ]),
-                              _vm._v(" "),
-                              _c("td", [
-                                _c(
-                                  "span",
-                                  { staticClass: "badge badge-dot mr-4" },
-                                  [
-                                    item.status == _vm.status.pending
-                                      ? _c("i", { staticClass: "bg-warning" })
-                                      : _vm._e(),
-                                    _vm._v(" "),
-                                    item.status == _vm.status.completed
-                                      ? _c("i", { staticClass: "bg-success" })
-                                      : _vm._e(),
-                                    _vm._v(" "),
-                                    item.status == _vm.status.delayed
-                                      ? _c("i", { staticClass: "bg-danger" })
-                                      : _vm._e(),
-                                    _vm._v(" "),
-                                    item.status == _vm.status.schedule
-                                      ? _c("i", { staticClass: "bg-info" })
-                                      : _vm._e(),
-                                    _vm._v(" "),
-                                    _c("span", { staticClass: "status" }, [
-                                      _vm._v(_vm._s(item.status))
-                                    ])
-                                  ]
-                                )
-                              ]),
-                              _vm._v(" "),
-                              _c("td", [
-                                _c(
-                                  "div",
-                                  { staticClass: "d-flex align-items-center" },
-                                  [
-                                    _c(
-                                      "span",
-                                      { staticClass: "completion mr-2" },
-                                      [
-                                        _vm._v(
-                                          _vm._s(item.completion) +
-                                            "\n                                                %"
-                                        )
-                                      ]
-                                    ),
-                                    _vm._v(" "),
-                                    _c("div", [
-                                      _c("div", { staticClass: "progress" }, [
-                                        item.status == _vm.status.pending
-                                          ? _c("div", {
-                                              staticClass:
-                                                "progress-bar bg-warning",
-                                              style: {
-                                                width: item.completion + "%"
-                                              },
-                                              attrs: { role: "progressbar" }
-                                            })
-                                          : _vm._e(),
-                                        _vm._v(" "),
-                                        item.status == _vm.status.completed
-                                          ? _c("div", {
-                                              staticClass:
-                                                "progress-bar bg-success",
-                                              style: {
-                                                width: item.completion + "%"
-                                              },
-                                              attrs: { role: "progressbar" }
-                                            })
-                                          : _vm._e(),
-                                        _vm._v(" "),
-                                        item.status == _vm.status.delayed
-                                          ? _c("div", {
-                                              staticClass:
-                                                "progress-bar bg-danger",
-                                              style: {
-                                                width: item.completion + "%"
-                                              },
-                                              attrs: { role: "progressbar" }
-                                            })
-                                          : _vm._e(),
-                                        _vm._v(" "),
-                                        item.status == _vm.status.schedule
-                                          ? _c("div", {
-                                              staticClass:
-                                                "progress-bar bg-info",
-                                              style: {
-                                                width: item.completion + "%"
-                                              },
-                                              attrs: { role: "progressbar" }
-                                            })
-                                          : _vm._e()
-                                      ])
-                                    ])
-                                  ]
-                                )
-                              ]),
-                              _vm._v(" "),
-                              _c("td", [
-                                _c(
-                                  "div",
-                                  { staticClass: "d-flex align-items-center" },
-                                  [
-                                    _c(
-                                      "span",
-                                      { staticClass: "completion mr-2" },
-                                      [_vm._v(_vm._s(item.created_at))]
-                                    )
-                                  ]
-                                )
-                              ]),
-                              _vm._v(" "),
-                              _c("td", [
-                                _c(
-                                  "div",
-                                  { staticStyle: { display: "inline-flex" } },
-                                  [
-                                    _c("div", [
-                                      _c(
-                                        "button",
-                                        {
-                                          staticClass: "btn btn-primary btn-sm",
-                                          on: {
-                                            click: function($event) {
-                                              return _vm.editBtn(item.id)
-                                            }
-                                          }
-                                        },
-                                        [
-                                          _c("i", {
-                                            staticClass: "far fa-edit"
-                                          }),
-                                          _vm._v(" "),
-                                          _vm._m(2, true)
-                                        ]
-                                      ),
-                                      _vm._v(" "),
-                                      _c(
-                                        "button",
-                                        {
-                                          staticClass: "btn btn-danger btn-sm",
-                                          attrs: { href: "#" },
-                                          on: {
-                                            click: function($event) {
-                                              return _vm.deleteBtn(item.id)
-                                            }
-                                          }
-                                        },
-                                        [
-                                          _c("i", {
-                                            staticClass: "fas fa-trash-alt"
-                                          }),
-                                          _vm._v(" "),
-                                          _vm._m(3, true)
-                                        ]
-                                      )
-                                    ])
-                                  ]
-                                )
-                              ])
-                            ])
-                          ]
-                        )
-                      }),
-                      _vm._v(" "),
-                      _vm.dataNotFound ? _c("tbody", [_vm._m(4)]) : _vm._e()
-                    ],
-                    2
-                  )
-                ]
-              )
-            ])
-          ])
-        ])
-      ]),
-      _vm._v(" "),
-      _c(
-        "vs-dialog",
-        {
-          attrs: { "prevent-close": "", blur: "" },
-          model: {
-            value: _vm.addProjectModel,
-            callback: function($$v) {
-              _vm.addProjectModel = $$v
-            },
-            expression: "addProjectModel"
-          }
-        },
-        [
-          [
-            _c("div", [
-              _c(
-                "form",
-                {
-                  on: {
-                    submit: function($event) {
-                      $event.preventDefault()
-                      return _vm.addPost($event)
-                    }
-                  }
-                },
-                [
-                  _c("div", { staticClass: "form-group" }, [
-                    _c("label", { attrs: { for: "file" } }, [
-                      _vm._v("Upload Excel File")
-                    ]),
-                    _vm._v(" "),
-                    _c("input", {
-                      attrs: {
-                        type: "file",
-                        id: "file",
-                        accept: ".xlsx, .xls"
-                      },
+                    "button",
+                    {
+                      staticClass: "btn btn-primary",
+                      attrs: { type: "button" },
                       on: {
-                        change: function($event) {
-                          return _vm.handleFileChange($event)
+                        click: function($event) {
+                          _vm.addProjectModel = true
                         }
                       }
-                    })
-                  ])
-                ]
-              )
+                    },
+                    [
+                      _vm._v(
+                        "\n                                    Upload Excel File\n                                "
+                      )
+                    ]
+                  )
+                ])
+              ])
+            ]),
+            _vm._v(" "),
+            _c(
+              "table",
+              { staticClass: "table align-items-center table-flush" },
+              [
+                _vm._m(1),
+                _vm._v(" "),
+                _c(
+                  "tbody",
+                  [
+                    _vm._l(_vm.grades, function(grade) {
+                      return _c("tr", { key: grade.id }, [
+                        _c("td", [_vm._v(_vm._s(grade.student_name))]),
+                        _vm._v(" "),
+                        _c("td", [_vm._v(_vm._s(grade.written))]),
+                        _vm._v(" "),
+                        _c("td", [_vm._v(_vm._s(grade.performance))]),
+                        _vm._v(" "),
+                        _c("td", [_vm._v(_vm._s(grade.midterm))]),
+                        _vm._v(" "),
+                        _c("td", [_vm._v(_vm._s(grade.finalexam))]),
+                        _vm._v(" "),
+                        _c("td", [_vm._v(_vm._s(grade.total_weighted_score))]),
+                        _vm._v(" "),
+                        _c("td", [_vm._v(_vm._s(grade.final_numerical_grade))]),
+                        _vm._v(" "),
+                        _c(
+                          "td",
+                          {
+                            class: {
+                              "text-success": grade.remarks === "Passed",
+                              "text-danger": grade.remarks === "Failed"
+                            }
+                          },
+                          [
+                            _vm._v(
+                              "\n                                    " +
+                                _vm._s(grade.remarks) +
+                                "\n                                "
+                            )
+                          ]
+                        )
+                      ])
+                    }),
+                    _vm._v(" "),
+                    _vm.grades.length === 0
+                      ? _c("tr", { staticClass: "text-center" }, [
+                          _c("td", { attrs: { colspan: "8" } }, [
+                            _vm._v("No Data Found")
+                          ])
+                        ])
+                      : _vm._e()
+                  ],
+                  2
+                )
+              ]
+            )
+          ])
+        ])
+      ])
+    ]),
+    _vm._v(" "),
+    _vm.addProjectModel
+      ? _c(
+          "div",
+          {
+            staticClass: "modal fade show",
+            staticStyle: { display: "block" },
+            attrs: { tabindex: "-1" }
+          },
+          [
+            _c("div", { staticClass: "modal-dialog" }, [
+              _c("div", { staticClass: "modal-content" }, [
+                _c("div", { staticClass: "modal-header" }, [
+                  _c("h5", { staticClass: "modal-title" }, [
+                    _vm._v("Upload Excel File")
+                  ]),
+                  _vm._v(" "),
+                  _c(
+                    "button",
+                    {
+                      staticClass: "close",
+                      attrs: { type: "button" },
+                      on: {
+                        click: function($event) {
+                          _vm.addProjectModel = false
+                        }
+                      }
+                    },
+                    [_c("span", [_vm._v("×")])]
+                  )
+                ]),
+                _vm._v(" "),
+                _c("div", { staticClass: "modal-body" }, [
+                  _c(
+                    "form",
+                    {
+                      ref: "uploadForm",
+                      on: {
+                        submit: function($event) {
+                          $event.preventDefault()
+                          return _vm.submitExcelFile($event)
+                        }
+                      }
+                    },
+                    [
+                      _c("div", { staticClass: "form-group" }, [
+                        _c("label", { attrs: { for: "excelFile" } }, [
+                          _vm._v("Choose Excel file:")
+                        ]),
+                        _vm._v(" "),
+                        _c("input", {
+                          ref: "excelFile",
+                          staticClass: "form-control",
+                          attrs: {
+                            type: "file",
+                            id: "excelFile",
+                            accept: ".xls, .xlsx"
+                          },
+                          on: { change: _vm.onFileChange }
+                        })
+                      ])
+                    ]
+                  )
+                ]),
+                _vm._v(" "),
+                _c("div", { staticClass: "modal-footer" }, [
+                  _c(
+                    "button",
+                    {
+                      staticClass: "btn btn-secondary",
+                      attrs: { type: "button" },
+                      on: {
+                        click: function($event) {
+                          _vm.addProjectModel = false
+                        }
+                      }
+                    },
+                    [
+                      _vm._v(
+                        "\n                        Close\n                    "
+                      )
+                    ]
+                  ),
+                  _vm._v(" "),
+                  _c(
+                    "button",
+                    {
+                      staticClass: "btn btn-primary",
+                      attrs: { type: "submit" },
+                      on: { click: _vm.submitExcelFile }
+                    },
+                    [
+                      _vm._v(
+                        "\n                        Upload\n                    "
+                      )
+                    ]
+                  )
+                ])
+              ])
             ])
           ]
-        ],
-        2
-      )
-    ],
-    1
-  )
+        )
+      : _vm._e(),
+    _vm._v(" "),
+    _vm.uploadMessage
+      ? _c("div", { staticClass: "alert alert-info" }, [
+          _vm._v("\n        " + _vm._s(_vm.uploadMessage) + "\n    ")
+        ])
+      : _vm._e()
+  ])
 }
 var staticRenderFns = [
   function() {
     var _vm = this
     var _h = _vm.$createElement
     var _c = _vm._self._c || _h
-    return _c("div", { staticClass: "card-header border-0" }, [
-      _c("div", { staticClass: "row align-items-center" }, [
-        _c("div", { staticClass: "col" }, [
-          _c("h3", { staticClass: "mb-0" }, [_vm._v("Compute Grade Table")])
-        ])
-      ])
+    return _c("div", { staticClass: "col" }, [
+      _c("h3", { staticClass: "mb-0" }, [_vm._v("Compute Grade Table")])
     ])
   },
   function() {
@@ -948,56 +563,24 @@ var staticRenderFns = [
     var _c = _vm._self._c || _h
     return _c("thead", { staticClass: "thead-light" }, [
       _c("tr", [
-        _c("th", { staticClass: "sort", attrs: { scope: "col" } }, [
-          _vm._v("Action")
+        _c("th", { attrs: { scope: "col" } }, [_vm._v("Student Name")]),
+        _vm._v(" "),
+        _c("th", { attrs: { scope: "col" } }, [_vm._v("Written")]),
+        _vm._v(" "),
+        _c("th", { attrs: { scope: "col" } }, [_vm._v("Performance")]),
+        _vm._v(" "),
+        _c("th", { attrs: { scope: "col" } }, [_vm._v("Midterm")]),
+        _vm._v(" "),
+        _c("th", { attrs: { scope: "col" } }, [_vm._v("Final Exam")]),
+        _vm._v(" "),
+        _c("th", { attrs: { scope: "col" } }, [_vm._v("Total Weighted Score")]),
+        _vm._v(" "),
+        _c("th", { attrs: { scope: "col" } }, [
+          _vm._v("Final Numerical Grade")
         ]),
         _vm._v(" "),
-        _c("th", { staticClass: "sort", attrs: { scope: "col" } }, [
-          _vm._v(
-            "\n                                        Student Name\n                                    "
-          )
-        ]),
-        _vm._v(" "),
-        _c("th", { staticClass: "sort", attrs: { scope: "col" } }, [
-          _vm._v(
-            "\n                                        Written\n                                    "
-          )
-        ]),
-        _vm._v(" "),
-        _c("th", { staticClass: "sort", attrs: { scope: "col" } }),
-        _vm._v(" "),
-        _c("th", { staticClass: "sort", attrs: { scope: "col" } }, [
-          _vm._v(
-            "\n                                        Midterm\n                                    "
-          )
-        ]),
-        _vm._v(" "),
-        _c("th", { staticClass: "sort", attrs: { scope: "col" } }, [
-          _vm._v("Final")
-        ]),
-        _vm._v(" "),
-        _c("th", { staticClass: "sort", attrs: { scope: "col" } })
+        _c("th", { attrs: { scope: "col" } }, [_vm._v("Remarks")])
       ])
-    ])
-  },
-  function() {
-    var _vm = this
-    var _h = _vm.$createElement
-    var _c = _vm._self._c || _h
-    return _c("span", [_c("strong", [_vm._v("Edit")])])
-  },
-  function() {
-    var _vm = this
-    var _h = _vm.$createElement
-    var _c = _vm._self._c || _h
-    return _c("span", [_c("strong", [_vm._v("Delete")])])
-  },
-  function() {
-    var _vm = this
-    var _h = _vm.$createElement
-    var _c = _vm._self._c || _h
-    return _c("tr", { staticClass: "text-center" }, [
-      _c("td", { attrs: { colspan: "10" } }, [_vm._v("No Data Display")])
     ])
   }
 ]
