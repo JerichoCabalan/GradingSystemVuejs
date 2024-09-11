@@ -46,6 +46,31 @@ export const routes = [
         },
         component: () => import("./components/Auth/ResetPassword")
     },
+
+    {
+        path: "/",
+        redirect: "/login",
+        component: () => import("./components/Layout/Layout"),
+        children: [
+            {
+                path: "/dashboard",
+                name: "dashboard",
+                meta: {
+                    title: "My Dashboard | Vue Dashboard"
+                },
+                component: () => import("./components/Dashboard/Dashboard")
+            },
+
+            {
+                path: "/logout",
+                name: "logout",
+                meta: {
+                    title: "Logout | Vue Dashboard"
+                },
+                component: () => import("./components/Logout")
+            }
+        ]
+    },
     {
         path: "/",
         redirect: "/login",
