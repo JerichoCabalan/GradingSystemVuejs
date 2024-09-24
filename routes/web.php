@@ -20,11 +20,7 @@ Route::group(['prefix'=>'api/v1','middleware'=>'auth'],function (){
     Route::get('/logout',[\App\Http\Controllers\AuthController::class, 'logout']);
     Route::get('/profile/info', [\App\Http\Controllers\UserController::class, 'getProfileInfo']);
     Route::get('/sendVerifyMail',[\App\Http\Controllers\AuthController::class,'SendVerifyMail']);
-    Route::get('/projects', [\App\Http\Controllers\ProjectController::class, 'getProject']);
-    Route::post('/add/project', [\App\Http\Controllers\ProjectController::class, 'addProject']);
-    Route::get('/get/project/{id}', [\App\Http\Controllers\ProjectController::class, 'getSingleProject']);
-    Route::put('/update/project', [\App\Http\Controllers\ProjectController::class, 'updateProject']);
-    Route::delete('/delete/project/{id}', [\App\Http\Controllers\ProjectController::class, 'deleteProject']);
+   
 
     Route::get('/profile', [\App\Http\Controllers\UserController::class, 'getProfile']);
     Route::post('/update/profile/pic',[\App\Http\Controllers\UserController::class, 'updateProfilePic']);
