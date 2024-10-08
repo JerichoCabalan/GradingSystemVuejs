@@ -7,9 +7,8 @@
                         <div class="card-header border-0">
                             <div class="row align-items-center">
                                 <div class="col">
-                                    <h3 class="mb-0">Compute Grade Table</h3>
+                                    <h3 class="mb-0">Computes Grade Table</h3>
                                 </div>
-                                <!-- Button to Open Upload Modal -->
                                 <div class="col text-right">
                                     <button
                                         type="button"
@@ -17,6 +16,13 @@
                                         @click="addProjectModel = true"
                                     >
                                         Upload Excel File
+                                    </button>
+                                    <button
+                                        type="button"
+                                        class="btn btn-primary"
+                                        @click="printGrade"
+                                    >
+                                        Print Grade
                                     </button>
                                 </div>
                             </div>
@@ -33,6 +39,7 @@
                                     <th scope="col">Total Weighted Score</th>
                                     <th scope="col">Final Numerical Grade</th>
                                     <th scope="col">Remarks</th>
+                                    <th scope="col">Action</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -54,6 +61,20 @@
                                     >
                                         {{ grade.remarks }}
                                     </td>
+                                    <td>
+                                        <button
+                                            class="btn btn-warning"
+                                            @click="editGrade(grade)"
+                                        >
+                                            <i class="fas fa-edit"></i> Edit
+                                        </button>
+                                        <button
+                                            class="btn btn-danger ml-2"
+                                            @click="deleteGrade(grade.id)"
+                                        >
+                                            <i class="fas fa-trash"></i> Delete
+                                        </button>
+                                    </td>
                                 </tr>
                                 <tr
                                     v-if="grades.length === 0"
@@ -68,7 +89,133 @@
             </div>
         </div>
 
-        <!-- Modal for Uploading Excel File -->
+        <!-- Edit Grade Modal -->
+        <div
+            v-if="editGradeModel"
+            class="modal fade show"
+            style="display: block;"
+            tabindex="-1"
+        >
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Edit Grade</h5>
+                        <button
+                            type="button"
+                            class="close"
+                            @click="editGradeModel = false"
+                        >
+                            <span>&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <form @submit.prevent="submitUpdatedGrade">
+                            <div class="form-row">
+                                <div class="form-group col">
+                                    <label for="student_name"
+                                        >Student Name</label
+                                    >
+                                    <input
+                                        type="text"
+                                        class="form-control"
+                                        v-model="currentGrade.student_name"
+                                        required
+                                    />
+                                </div>
+                                <div class="form-group col">
+                                    <label for="written">Written</label>
+                                    <input
+                                        type="number"
+                                        class="form-control"
+                                        v-model.number="currentGrade.written"
+                                        @input="calculateGrade"
+                                        required
+                                    />
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group col">
+                                    <label for="performance">Performance</label>
+                                    <input
+                                        type="number"
+                                        class="form-control"
+                                        v-model.number="
+                                            currentGrade.performance
+                                        "
+                                        @input="calculateGrade"
+                                        required
+                                    />
+                                </div>
+                                <div class="form-group col">
+                                    <label for="midterm">Midterm</label>
+                                    <input
+                                        type="number"
+                                        class="form-control"
+                                        v-model.number="currentGrade.midterm"
+                                        @input="calculateGrade"
+                                        required
+                                    />
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group col">
+                                    <label for="finalexam">Final Exam</label>
+                                    <input
+                                        type="number"
+                                        class="form-control"
+                                        v-model.number="currentGrade.finalexam"
+                                        @input="calculateGrade"
+                                        required
+                                    />
+                                </div>
+                                <div class="form-group col">
+                                    <label for="total_weighted_score"
+                                        >Total Weighted Score</label
+                                    >
+                                    <input
+                                        type="number"
+                                        class="form-control"
+                                        v-model.number="
+                                            currentGrade.total_weighted_score
+                                        "
+                                        readonly
+                                    />
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group col">
+                                    <label for="final_numerical_grade"
+                                        >Final Numerical Grade</label
+                                    >
+                                    <input
+                                        type="number"
+                                        class="form-control"
+                                        v-model.number="
+                                            currentGrade.final_numerical_grade
+                                        "
+                                        readonly
+                                    />
+                                </div>
+                                <div class="form-group col">
+                                    <label for="remarks">Remarks</label>
+                                    <input
+                                        type="text"
+                                        class="form-control"
+                                        v-model="currentGrade.remarks"
+                                        required
+                                    />
+                                </div>
+                            </div>
+                            <button type="submit" class="btn btn-primary">
+                                Update Grade
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Upload Modal -->
         <div
             v-if="addProjectModel"
             class="modal fade show"
@@ -87,110 +234,133 @@
                             <span>&times;</span>
                         </button>
                     </div>
-
                     <div class="modal-body">
-                        <form
-                            ref="uploadForm"
-                            @submit.prevent="submitExcelFile"
-                        >
+                        <form @submit.prevent="uploadFile">
                             <div class="form-group">
-                                <label for="excelFile"
-                                    >Choose Excel file:</label
-                                >
                                 <input
                                     type="file"
-                                    class="form-control"
-                                    id="excelFile"
-                                    ref="excelFile"
                                     @change="onFileChange"
-                                    accept=".xls, .xlsx"
+                                    accept=".xlsx, .xls"
                                 />
                             </div>
+                            <button type="submit" class="btn btn-primary">
+                                Upload
+                            </button>
                         </form>
-                    </div>
-
-                    <div class="modal-footer">
-                        <button
-                            type="button"
-                            class="btn btn-secondary"
-                            @click="addProjectModel = false"
-                        >
-                            Close
-                        </button>
-                        <button
-                            type="submit"
-                            class="btn btn-primary"
-                            @click="submitExcelFile"
-                        >
-                            Upload
-                        </button>
+                        <div v-if="uploadMessage" class="mt-2">
+                            <p>{{ uploadMessage }}</p>
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
-
-        <!-- Notifications -->
-        <div v-if="uploadMessage" class="alert alert-info">
-            {{ uploadMessage }}
         </div>
     </div>
 </template>
 
 <script>
 export default {
-    name: "Dashboard",
     data() {
         return {
-            addProjectModel: false, // For opening/closing the modal
-            selectedFile: null, // Store the selected file
+            addProjectModel: false, // For opening/closing the upload modal
+            editGradeModel: false, // For opening/closing the edit modal
+            selectedFile: null, // Store the selected file for upload
             uploadMessage: null, // To store success/error messages
-            grades: [] // Store the grades fetched from the API
+            grades: [], // Store the grades fetched from the API
+            currentGrade: null // Store the current grade being edited
         };
     },
     methods: {
-        onFileChange(event) {
-            this.selectedFile = event.target.files[0]; // Storing the selected file
-        },
-        submitExcelFile() {
-            if (!this.selectedFile) {
-                this.uploadMessage = "Please select a file before uploading.";
-                return;
-            }
-
-            let formData = new FormData();
-            formData.append("file", this.selectedFile); // Add the file to FormData
-
-            // Submit the file using axios
+        // Method to fetch grades from the API
+        getGrades() {
             this.axios
-                .post("/api/v1/import_excel_classrecord", formData, {
-                    headers: {
-                        "Content-Type": "multipart/form-data"
-                    }
-                })
+                .get("/api/v1/grades")
                 .then(response => {
-                    // If the upload is successful
-                    this.uploadMessage = response.data.message;
-                    this.addProjectModel = false; // Close the modal
-                    this.selectedFile = null; // Clear the file input
-                    this.getGrades(); // Fetch and refresh the grades data
+                    this.grades = response.data;
                 })
                 .catch(error => {
-                    // Handle errors and show message
+                    console.error("Error fetching grades:", error);
+                });
+        },
+
+        // Method to handle file change for upload
+        onFileChange(event) {
+            this.selectedFile = event.target.files[0];
+        },
+
+        // Method to upload the selected file
+        uploadFile() {
+            const formData = new FormData();
+            formData.append("file", this.selectedFile);
+
+            this.axios
+                .post("/api/v1/grades/upload", formData)
+                .then(response => {
+                    this.uploadMessage = response.data.message;
+                    this.addProjectModel = false; // Close the modal
+                    this.getGrades(); // Refresh the grades list
+                })
+                .catch(error => {
                     this.uploadMessage =
                         error.response.data.message || "Error uploading file.";
                 });
         },
-        getGrades() {
-            // Fetch the grades from the backend API
+
+        // Method to edit a specific grade
+        editGrade(grade) {
+            this.currentGrade = { ...grade }; // Create a copy of the grade for editing
+            this.editGradeModel = true; // Show the edit modal
+        },
+
+        // Method to submit the updated grade
+        // submitUpdatedGrade() {
+        //     this.axios
+        //         .put(
+        //             `/api/v1/grades/${this.currentGrade.id}`,
+        //             this.currentGrade
+        //         )
+        //         .then(response => {
+        //             this.getGrades(); // Refresh the grades list
+        //             this.editGradeModel = false; // Close the modal
+        //         })
+        //         .catch(error => {
+        //             console.error("Error updating grade:", error);
+        //         });
+        // },
+
+        submitUpdatedGrade() {
             this.axios
-                .get("/api/v1/grades")
+                .put(`/api/v1/grades/${this.currentGrade.id}`, {
+                    written_total_score: this.currentGrade.written,
+                    performance_total_score: this.currentGrade.performance,
+                    midterm_total_score: this.currentGrade.midterm,
+                    finalexam_total_score: this.currentGrade.finalexam
+                })
                 .then(response => {
-                    this.grades = response.data; // Set the grades to be displayed in the table
+                    this.getGrades(); // Refresh the grades list
+                    this.editGradeModel = false; // Close the modal
                 })
                 .catch(error => {
-                    this.uploadMessage =
-                        error.response.data.message || "Error fetching grades.";
+                    console.error("Error updating grade:", error);
                 });
+        },
+
+        // Method to delete a specific grade
+        deleteGrade(id) {
+            if (confirm("Are you sure you want to delete this grade?")) {
+                this.axios
+                    .delete(`/api/v1/grades/${id}`)
+                    .then(response => {
+                        this.getGrades(); // Refresh the grades list
+                    })
+                    .catch(error => {
+                        console.error("Error deleting grade:", error);
+                    });
+            }
+        },
+
+        // Method to print the grades
+        printGrade() {
+            window.print(); // Use window.print() to print the current page
         }
     },
     mounted() {
@@ -199,9 +369,8 @@ export default {
 };
 </script>
 
-<style>
-/* Add your styles here */
+<style scoped>
 .modal {
-    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 1050; /* Ensure the modal is above other content */
 }
 </style>

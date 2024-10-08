@@ -36,6 +36,11 @@ Route::group(['prefix'=>'api/v1','middleware'=>'auth'],function (){
     Route::get('/grades', [\App\Http\Controllers\ComputeGradeController::class, 'getGrades']);
 
     Route::post('/import_excel_classrecord', [\App\Http\Controllers\ComputeGradeController::class, 'import_excel_classrecord']);
+    Route::post('/print_pdf_classrecord', [\App\Http\Controllers\ComputeGradeController::class, 'print_pdf_classrecord']);
+    Route::post('/delete_classrecord', [\App\Http\Controllers\ComputeGradeController::class, 'delete_classrecord']);
+
+    Route::delete('/grades/{id}', [\App\Http\Controllers\ComputeGradeController::class, 'destroy']);
+    Route::put('/grades/{id}', [\App\Http\Controllers\ComputeGradeController::class, 'update']);
 
 
 
