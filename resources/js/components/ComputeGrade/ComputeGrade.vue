@@ -22,8 +22,57 @@
                                         class="btn btn-primary"
                                         @click="printGrade"
                                     >
-                                        Print Grade(PDF)
+                                        Print Grade
                                     </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div
+                            v-if="addProjectModel"
+                            class="modal fade show"
+                            style="display: block;"
+                            tabindex="-1"
+                        >
+                            <div class="modal-dialog">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title">
+                                            Upload Excel File
+                                        </h5>
+                                        <button
+                                            type="button"
+                                            class="close"
+                                            @click="addProjectModel = false"
+                                        >
+                                            <span>&times;</span>
+                                        </button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <form @submit.prevent="submitExcelFile">
+                                            <div class="form-group">
+                                                <label for="file"
+                                                    >Select Excel File</label
+                                                >
+                                                <input
+                                                    type="file"
+                                                    class="form-control"
+                                                    @change="onFileChange"
+                                                    accept=".xlsx, .xls"
+                                                    required
+                                                />
+                                            </div>
+                                            <button
+                                                type="submit"
+                                                class="btn btn-primary"
+                                            >
+                                                Upload
+                                            </button>
+                                        </form>
+                                        <div v-if="uploadMessage" class="mt-2">
+                                            {{ uploadMessage }}
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -91,7 +140,7 @@
 
         <!-- Upload Modal -->
         <div
-            v-if="addProjectModel"
+            v-if="editGradeModel"
             class="modal fade show"
             style="display: block;"
             tabindex="-1"
@@ -99,31 +148,117 @@
             <div class="modal-dialog">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h5 class="modal-title">Uploads Excel File</h5>
+                        <h5 class="modal-title">Edit Grade</h5>
                         <button
                             type="button"
                             class="close"
-                            @click="addProjectModel = false"
+                            @click="editGradeModel = false"
                         >
                             <span>&times;</span>
                         </button>
                     </div>
                     <div class="modal-body">
-                        <form @submit.prevent="submitExcelFile">
-                            <div class="form-group">
-                                <input
-                                    type="file"
-                                    @change="onFileChange"
-                                    accept=".xlsx, .xls"
-                                />
+                        <form @submit.prevent="submitUpdatedGrade">
+                            <div class="form-row">
+                                <div class="form-group col">
+                                    <label for="student_name"
+                                        >Student Name</label
+                                    >
+                                    <input
+                                        type="text"
+                                        class="form-control"
+                                        v-model="currentGrade.student_name"
+                                        required
+                                    />
+                                </div>
+                                <div class="form-group col">
+                                    <label for="written">Written</label>
+                                    <input
+                                        type="number"
+                                        class="form-control"
+                                        v-model.number="currentGrade.written"
+                                        @input="calculateGrade"
+                                        required
+                                    />
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group col">
+                                    <label for="performance">Performance</label>
+                                    <input
+                                        type="number"
+                                        class="form-control"
+                                        v-model.number="
+                                            currentGrade.performance
+                                        "
+                                        @input="calculateGrade"
+                                        required
+                                    />
+                                </div>
+                                <div class="form-group col">
+                                    <label for="midterm">Midterm</label>
+                                    <input
+                                        type="number"
+                                        class="form-control"
+                                        v-model.number="currentGrade.midterm"
+                                        @input="calculateGrade"
+                                        required
+                                    />
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group col">
+                                    <label for="finalexam">Final Exam</label>
+                                    <input
+                                        type="number"
+                                        class="form-control"
+                                        v-model.number="currentGrade.finalexam"
+                                        @input="calculateGrade"
+                                        required
+                                    />
+                                </div>
+                                <div class="form-group col">
+                                    <label for="total_weighted_score"
+                                        >Total Weighted Score</label
+                                    >
+                                    <input
+                                        type="number"
+                                        class="form-control"
+                                        v-model.number="
+                                            currentGrade.total_weighted_score
+                                        "
+                                        readonly
+                                    />
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group col">
+                                    <label for="final_numerical_grade"
+                                        >Final Numerical Grade</label
+                                    >
+                                    <input
+                                        type="number"
+                                        class="form-control"
+                                        v-model.number="
+                                            currentGrade.final_numerical_grade
+                                        "
+                                        readonly
+                                    />
+                                </div>
+                                <div class="form-group col">
+                                    <label for="remarks">Remarks</label>
+                                    <input
+                                        type="text"
+                                        class="form-control"
+                                        v-model="currentGrade.remarks"
+                                        readonly
+                                    />
+                                </div>
                             </div>
                             <button type="submit" class="btn btn-primary">
-                                Upload
+                                Update Grade
                             </button>
                         </form>
-                        <div v-if="uploadMessage" class="mt-2">
-                            <p>{{ uploadMessage }}</p>
-                        </div>
                     </div>
                 </div>
             </div>
@@ -192,7 +327,7 @@ export default {
                     "/api/v1/print_pdf_classrecord",
                     {},
                     {
-                        responseType: "blob"
+                        responseType: "blob" // Important for receiving binary data like PDF
                     }
                 )
                 .then(response => {
@@ -201,9 +336,9 @@ export default {
                     );
                     const link = document.createElement("a");
                     link.href = url;
-                    link.setAttribute("download", "Grades.pdf");
+                    link.setAttribute("download", "Grades.pdf"); // Specify the file name for download
                     document.body.appendChild(link);
-                    link.click();
+                    link.click(); // Auto-click to open/download the PDF
                     document.body.removeChild(link);
                 })
                 .catch(error => {

@@ -132,22 +132,23 @@ class ComputeGradeController extends Controller
         $grades = ComputeGrade::all();
         return response()->json($grades, 200);
     }
-
     public function print_pdf_classrecord()
     {
         $grades = ComputeGrade::all();
-
-        $semester = '2nd semester';
-        $course_year = 'BSEE III';
-        $course_code = 'STS';
-        $number_of_units = '3';
-        $co_requisite = 'None';
-        $academic_year = '2020-2021';
-        $section = 'FGN01';
-        $course_description = 'Science';
-        $contact_hours = '3';
-        $prerequisite = 'None';
-
+    
+        $classRecord = ComputeGrade::first(); 
+    
+        $semester = $classRecord->semester;
+        $course_year = $classRecord->course_year;
+        $course_code = $classRecord->course_code;
+        $number_of_units = $classRecord->number_of_units;
+        $co_requisite = $classRecord->co_requisite;
+        $academic_year = $classRecord->academic_year;
+        $section = $classRecord->section;
+        $course_description = $classRecord->course_description;
+        $contact_hours = $classRecord->contact_hours;
+        $prerequisite = $classRecord->prerequisite;
+    
         $pdf = Pdf::loadView('printgradepdf.printpdfgrade', [
             'grades' => $grades,
             'semester' => $semester,
@@ -161,7 +162,7 @@ class ComputeGradeController extends Controller
             'contact_hours' => $contact_hours,
             'prerequisite' => $prerequisite,
         ]);
-
+    
         $pdf->getDomPDF()->setHttpContext(
             stream_context_create([
                 'ssl' => [
@@ -171,9 +172,9 @@ class ComputeGradeController extends Controller
                 ]
             ])
         );
-
+    
         $pdf->setPaper('A4', 'landscape');
-
+    
         return $pdf->stream('class_record.pdf');
     }
 

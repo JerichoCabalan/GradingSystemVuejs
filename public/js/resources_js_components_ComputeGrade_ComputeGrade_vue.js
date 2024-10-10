@@ -150,6 +150,141 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
   data: function data() {
     return {
@@ -202,14 +337,17 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       var _this3 = this;
 
       this.axios.post("/api/v1/print_pdf_classrecord", {}, {
-        responseType: "blob"
+        responseType: "blob" // Important for receiving binary data like PDF
+
       }).then(function (response) {
         var url = window.URL.createObjectURL(new Blob([response.data]));
         var link = document.createElement("a");
         link.href = url;
-        link.setAttribute("download", "Grades.pdf");
+        link.setAttribute("download", "Grades.pdf"); // Specify the file name for download
+
         document.body.appendChild(link);
-        link.click();
+        link.click(); // Auto-click to open/download the PDF
+
         document.body.removeChild(link);
       })["catch"](function (error) {
         _this3.uploadMessage = error.response.data.message || "Error printing grades.";
@@ -477,13 +615,105 @@ var render = function() {
                     },
                     [
                       _vm._v(
-                        "\n                                    Print Grade(PDF)\n                                "
+                        "\n                                    Print Grade\n                                "
                       )
                     ]
                   )
                 ])
               ])
             ]),
+            _vm._v(" "),
+            _vm.addProjectModel
+              ? _c(
+                  "div",
+                  {
+                    staticClass: "modal fade show",
+                    staticStyle: { display: "block" },
+                    attrs: { tabindex: "-1" }
+                  },
+                  [
+                    _c("div", { staticClass: "modal-dialog" }, [
+                      _c("div", { staticClass: "modal-content" }, [
+                        _c("div", { staticClass: "modal-header" }, [
+                          _c("h5", { staticClass: "modal-title" }, [
+                            _vm._v(
+                              "\n                                        Upload Excel File\n                                    "
+                            )
+                          ]),
+                          _vm._v(" "),
+                          _c(
+                            "button",
+                            {
+                              staticClass: "close",
+                              attrs: { type: "button" },
+                              on: {
+                                click: function($event) {
+                                  _vm.addProjectModel = false
+                                }
+                              }
+                            },
+                            [_c("span", [_vm._v("×")])]
+                          )
+                        ]),
+                        _vm._v(" "),
+                        _c("div", { staticClass: "modal-body" }, [
+                          _c(
+                            "form",
+                            {
+                              on: {
+                                submit: function($event) {
+                                  $event.preventDefault()
+                                  return _vm.submitExcelFile($event)
+                                }
+                              }
+                            },
+                            [
+                              _c("div", { staticClass: "form-group" }, [
+                                _c("label", { attrs: { for: "file" } }, [
+                                  _vm._v("Select Excel File")
+                                ]),
+                                _vm._v(" "),
+                                _c("input", {
+                                  staticClass: "form-control",
+                                  attrs: {
+                                    type: "file",
+                                    accept: ".xlsx, .xls",
+                                    required: ""
+                                  },
+                                  on: { change: _vm.onFileChange }
+                                })
+                              ]),
+                              _vm._v(" "),
+                              _c(
+                                "button",
+                                {
+                                  staticClass: "btn btn-primary",
+                                  attrs: { type: "submit" }
+                                },
+                                [
+                                  _vm._v(
+                                    "\n                                            Upload\n                                        "
+                                  )
+                                ]
+                              )
+                            ]
+                          ),
+                          _vm._v(" "),
+                          _vm.uploadMessage
+                            ? _c("div", { staticClass: "mt-2" }, [
+                                _vm._v(
+                                  "\n                                        " +
+                                    _vm._s(_vm.uploadMessage) +
+                                    "\n                                    "
+                                )
+                              ])
+                            : _vm._e()
+                        ])
+                      ])
+                    ])
+                  ]
+                )
+              : _vm._e(),
             _vm._v(" "),
             _c(
               "table",
@@ -584,7 +814,7 @@ var render = function() {
       ])
     ]),
     _vm._v(" "),
-    _vm.addProjectModel
+    _vm.editGradeModel
       ? _c(
           "div",
           {
@@ -597,7 +827,7 @@ var render = function() {
               _c("div", { staticClass: "modal-content" }, [
                 _c("div", { staticClass: "modal-header" }, [
                   _c("h5", { staticClass: "modal-title" }, [
-                    _vm._v("Uploads Excel File")
+                    _vm._v("Edit Grade")
                   ]),
                   _vm._v(" "),
                   _c(
@@ -607,7 +837,7 @@ var render = function() {
                       attrs: { type: "button" },
                       on: {
                         click: function($event) {
-                          _vm.addProjectModel = false
+                          _vm.editGradeModel = false
                         }
                       }
                     },
@@ -622,16 +852,320 @@ var render = function() {
                       on: {
                         submit: function($event) {
                           $event.preventDefault()
-                          return _vm.submitExcelFile($event)
+                          return _vm.submitUpdatedGrade($event)
                         }
                       }
                     },
                     [
-                      _c("div", { staticClass: "form-group" }, [
-                        _c("input", {
-                          attrs: { type: "file", accept: ".xlsx, .xls" },
-                          on: { change: _vm.onFileChange }
-                        })
+                      _c("div", { staticClass: "form-row" }, [
+                        _c("div", { staticClass: "form-group col" }, [
+                          _c("label", { attrs: { for: "student_name" } }, [
+                            _vm._v("Student Name")
+                          ]),
+                          _vm._v(" "),
+                          _c("input", {
+                            directives: [
+                              {
+                                name: "model",
+                                rawName: "v-model",
+                                value: _vm.currentGrade.student_name,
+                                expression: "currentGrade.student_name"
+                              }
+                            ],
+                            staticClass: "form-control",
+                            attrs: { type: "text", required: "" },
+                            domProps: { value: _vm.currentGrade.student_name },
+                            on: {
+                              input: function($event) {
+                                if ($event.target.composing) {
+                                  return
+                                }
+                                _vm.$set(
+                                  _vm.currentGrade,
+                                  "student_name",
+                                  $event.target.value
+                                )
+                              }
+                            }
+                          })
+                        ]),
+                        _vm._v(" "),
+                        _c("div", { staticClass: "form-group col" }, [
+                          _c("label", { attrs: { for: "written" } }, [
+                            _vm._v("Written")
+                          ]),
+                          _vm._v(" "),
+                          _c("input", {
+                            directives: [
+                              {
+                                name: "model",
+                                rawName: "v-model.number",
+                                value: _vm.currentGrade.written,
+                                expression: "currentGrade.written",
+                                modifiers: { number: true }
+                              }
+                            ],
+                            staticClass: "form-control",
+                            attrs: { type: "number", required: "" },
+                            domProps: { value: _vm.currentGrade.written },
+                            on: {
+                              input: [
+                                function($event) {
+                                  if ($event.target.composing) {
+                                    return
+                                  }
+                                  _vm.$set(
+                                    _vm.currentGrade,
+                                    "written",
+                                    _vm._n($event.target.value)
+                                  )
+                                },
+                                _vm.calculateGrade
+                              ],
+                              blur: function($event) {
+                                return _vm.$forceUpdate()
+                              }
+                            }
+                          })
+                        ])
+                      ]),
+                      _vm._v(" "),
+                      _c("div", { staticClass: "form-row" }, [
+                        _c("div", { staticClass: "form-group col" }, [
+                          _c("label", { attrs: { for: "performance" } }, [
+                            _vm._v("Performance")
+                          ]),
+                          _vm._v(" "),
+                          _c("input", {
+                            directives: [
+                              {
+                                name: "model",
+                                rawName: "v-model.number",
+                                value: _vm.currentGrade.performance,
+                                expression:
+                                  "\n                                        currentGrade.performance\n                                    ",
+                                modifiers: { number: true }
+                              }
+                            ],
+                            staticClass: "form-control",
+                            attrs: { type: "number", required: "" },
+                            domProps: { value: _vm.currentGrade.performance },
+                            on: {
+                              input: [
+                                function($event) {
+                                  if ($event.target.composing) {
+                                    return
+                                  }
+                                  _vm.$set(
+                                    _vm.currentGrade,
+                                    "performance",
+                                    _vm._n($event.target.value)
+                                  )
+                                },
+                                _vm.calculateGrade
+                              ],
+                              blur: function($event) {
+                                return _vm.$forceUpdate()
+                              }
+                            }
+                          })
+                        ]),
+                        _vm._v(" "),
+                        _c("div", { staticClass: "form-group col" }, [
+                          _c("label", { attrs: { for: "midterm" } }, [
+                            _vm._v("Midterm")
+                          ]),
+                          _vm._v(" "),
+                          _c("input", {
+                            directives: [
+                              {
+                                name: "model",
+                                rawName: "v-model.number",
+                                value: _vm.currentGrade.midterm,
+                                expression: "currentGrade.midterm",
+                                modifiers: { number: true }
+                              }
+                            ],
+                            staticClass: "form-control",
+                            attrs: { type: "number", required: "" },
+                            domProps: { value: _vm.currentGrade.midterm },
+                            on: {
+                              input: [
+                                function($event) {
+                                  if ($event.target.composing) {
+                                    return
+                                  }
+                                  _vm.$set(
+                                    _vm.currentGrade,
+                                    "midterm",
+                                    _vm._n($event.target.value)
+                                  )
+                                },
+                                _vm.calculateGrade
+                              ],
+                              blur: function($event) {
+                                return _vm.$forceUpdate()
+                              }
+                            }
+                          })
+                        ])
+                      ]),
+                      _vm._v(" "),
+                      _c("div", { staticClass: "form-row" }, [
+                        _c("div", { staticClass: "form-group col" }, [
+                          _c("label", { attrs: { for: "finalexam" } }, [
+                            _vm._v("Final Exam")
+                          ]),
+                          _vm._v(" "),
+                          _c("input", {
+                            directives: [
+                              {
+                                name: "model",
+                                rawName: "v-model.number",
+                                value: _vm.currentGrade.finalexam,
+                                expression: "currentGrade.finalexam",
+                                modifiers: { number: true }
+                              }
+                            ],
+                            staticClass: "form-control",
+                            attrs: { type: "number", required: "" },
+                            domProps: { value: _vm.currentGrade.finalexam },
+                            on: {
+                              input: [
+                                function($event) {
+                                  if ($event.target.composing) {
+                                    return
+                                  }
+                                  _vm.$set(
+                                    _vm.currentGrade,
+                                    "finalexam",
+                                    _vm._n($event.target.value)
+                                  )
+                                },
+                                _vm.calculateGrade
+                              ],
+                              blur: function($event) {
+                                return _vm.$forceUpdate()
+                              }
+                            }
+                          })
+                        ]),
+                        _vm._v(" "),
+                        _c("div", { staticClass: "form-group col" }, [
+                          _c(
+                            "label",
+                            { attrs: { for: "total_weighted_score" } },
+                            [_vm._v("Total Weighted Score")]
+                          ),
+                          _vm._v(" "),
+                          _c("input", {
+                            directives: [
+                              {
+                                name: "model",
+                                rawName: "v-model.number",
+                                value: _vm.currentGrade.total_weighted_score,
+                                expression:
+                                  "\n                                        currentGrade.total_weighted_score\n                                    ",
+                                modifiers: { number: true }
+                              }
+                            ],
+                            staticClass: "form-control",
+                            attrs: { type: "number", readonly: "" },
+                            domProps: {
+                              value: _vm.currentGrade.total_weighted_score
+                            },
+                            on: {
+                              input: function($event) {
+                                if ($event.target.composing) {
+                                  return
+                                }
+                                _vm.$set(
+                                  _vm.currentGrade,
+                                  "total_weighted_score",
+                                  _vm._n($event.target.value)
+                                )
+                              },
+                              blur: function($event) {
+                                return _vm.$forceUpdate()
+                              }
+                            }
+                          })
+                        ])
+                      ]),
+                      _vm._v(" "),
+                      _c("div", { staticClass: "form-row" }, [
+                        _c("div", { staticClass: "form-group col" }, [
+                          _c(
+                            "label",
+                            { attrs: { for: "final_numerical_grade" } },
+                            [_vm._v("Final Numerical Grade")]
+                          ),
+                          _vm._v(" "),
+                          _c("input", {
+                            directives: [
+                              {
+                                name: "model",
+                                rawName: "v-model.number",
+                                value: _vm.currentGrade.final_numerical_grade,
+                                expression:
+                                  "\n                                        currentGrade.final_numerical_grade\n                                    ",
+                                modifiers: { number: true }
+                              }
+                            ],
+                            staticClass: "form-control",
+                            attrs: { type: "number", readonly: "" },
+                            domProps: {
+                              value: _vm.currentGrade.final_numerical_grade
+                            },
+                            on: {
+                              input: function($event) {
+                                if ($event.target.composing) {
+                                  return
+                                }
+                                _vm.$set(
+                                  _vm.currentGrade,
+                                  "final_numerical_grade",
+                                  _vm._n($event.target.value)
+                                )
+                              },
+                              blur: function($event) {
+                                return _vm.$forceUpdate()
+                              }
+                            }
+                          })
+                        ]),
+                        _vm._v(" "),
+                        _c("div", { staticClass: "form-group col" }, [
+                          _c("label", { attrs: { for: "remarks" } }, [
+                            _vm._v("Remarks")
+                          ]),
+                          _vm._v(" "),
+                          _c("input", {
+                            directives: [
+                              {
+                                name: "model",
+                                rawName: "v-model",
+                                value: _vm.currentGrade.remarks,
+                                expression: "currentGrade.remarks"
+                              }
+                            ],
+                            staticClass: "form-control",
+                            attrs: { type: "text", readonly: "" },
+                            domProps: { value: _vm.currentGrade.remarks },
+                            on: {
+                              input: function($event) {
+                                if ($event.target.composing) {
+                                  return
+                                }
+                                _vm.$set(
+                                  _vm.currentGrade,
+                                  "remarks",
+                                  $event.target.value
+                                )
+                              }
+                            }
+                          })
+                        ])
                       ]),
                       _vm._v(" "),
                       _c(
@@ -642,18 +1176,12 @@ var render = function() {
                         },
                         [
                           _vm._v(
-                            "\n                            Upload\n                        "
+                            "\n                            Update Grade\n                        "
                           )
                         ]
                       )
                     ]
-                  ),
-                  _vm._v(" "),
-                  _vm.uploadMessage
-                    ? _c("div", { staticClass: "mt-2" }, [
-                        _c("p", [_vm._v(_vm._s(_vm.uploadMessage))])
-                      ])
-                    : _vm._e()
+                  )
                 ])
               ])
             ])
