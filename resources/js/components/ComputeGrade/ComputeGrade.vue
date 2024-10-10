@@ -192,7 +192,7 @@ export default {
                     "/api/v1/print_pdf_classrecord",
                     {},
                     {
-                        responseType: "blob" // Important for receiving binary data like PDF
+                        responseType: "blob"
                     }
                 )
                 .then(response => {
@@ -201,9 +201,9 @@ export default {
                     );
                     const link = document.createElement("a");
                     link.href = url;
-                    link.setAttribute("download", "Grades.pdf"); // Specify the file name for download
+                    link.setAttribute("download", "Grades.pdf");
                     document.body.appendChild(link);
-                    link.click(); // Auto-click to open/download the PDF
+                    link.click();
                     document.body.removeChild(link);
                 })
                 .catch(error => {

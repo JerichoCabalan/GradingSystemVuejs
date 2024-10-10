@@ -202,17 +202,14 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       var _this3 = this;
 
       this.axios.post("/api/v1/print_pdf_classrecord", {}, {
-        responseType: "blob" // Important for receiving binary data like PDF
-
+        responseType: "blob"
       }).then(function (response) {
         var url = window.URL.createObjectURL(new Blob([response.data]));
         var link = document.createElement("a");
         link.href = url;
-        link.setAttribute("download", "Grades.pdf"); // Specify the file name for download
-
+        link.setAttribute("download", "Grades.pdf");
         document.body.appendChild(link);
-        link.click(); // Auto-click to open/download the PDF
-
+        link.click();
         document.body.removeChild(link);
       })["catch"](function (error) {
         _this3.uploadMessage = error.response.data.message || "Error printing grades.";
