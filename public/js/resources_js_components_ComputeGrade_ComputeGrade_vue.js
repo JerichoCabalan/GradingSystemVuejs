@@ -477,7 +477,7 @@ var render = function() {
                     },
                     [
                       _vm._v(
-                        "\n                                    Print Grade\n                                "
+                        "\n                                    Print Grade(PDF)\n                                "
                       )
                     ]
                   )
@@ -597,7 +597,7 @@ var render = function() {
               _c("div", { staticClass: "modal-content" }, [
                 _c("div", { staticClass: "modal-header" }, [
                   _c("h5", { staticClass: "modal-title" }, [
-                    _vm._v("Upload Excel File")
+                    _vm._v("Uploads Excel File")
                   ]),
                   _vm._v(" "),
                   _c(

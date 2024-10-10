@@ -22,7 +22,7 @@
                                         class="btn btn-primary"
                                         @click="printGrade"
                                     >
-                                        Print Grade
+                                        Print Grade(PDF)
                                     </button>
                                 </div>
                             </div>
@@ -99,7 +99,7 @@
             <div class="modal-dialog">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h5 class="modal-title">Upload Excel File</h5>
+                        <h5 class="modal-title">Uploads Excel File</h5>
                         <button
                             type="button"
                             class="close"
