@@ -150,151 +150,18 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 //
 //
 //
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
   data: function data() {
     return {
       addProjectModel: false,
-      // For opening/closing the upload modal
       editGradeModel: false,
-      // For opening/closing the edit modal
       selectedFile: null,
-      // Store the selected file for upload
       uploadMessage: null,
-      // To store success/error messages
       grades: [],
-      // Store the grades fetched from the API
-      currentGrade: null // Store the current grade being edited
-
+      currentGrade: null
     };
   },
   methods: {
-    // Method to fetch grades from the API
     getGrades: function getGrades() {
       var _this = this;
 
@@ -304,84 +171,144 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
         console.error("Error fetching grades:", error);
       });
     },
-    // Method to handle file change for upload
     onFileChange: function onFileChange(event) {
       this.selectedFile = event.target.files[0];
     },
-    // Method to upload the selected file
-    uploadFile: function uploadFile() {
+    submitExcelFile: function submitExcelFile() {
       var _this2 = this;
+
+      if (!this.selectedFile) {
+        this.uploadMessage = "Please select a file before uploading.";
+        return;
+      }
 
       var formData = new FormData();
       formData.append("file", this.selectedFile);
-      this.axios.post("/api/v1/grades/upload", formData).then(function (response) {
+      this.axios.post("/api/v1/import_excel_classrecord", formData, {
+        headers: {
+          "Content-Type": "multipart/form-data"
+        }
+      }).then(function (response) {
         _this2.uploadMessage = response.data.message;
-        _this2.addProjectModel = false; // Close the modal
+        _this2.addProjectModel = false;
+        _this2.selectedFile = null;
 
-        _this2.getGrades(); // Refresh the grades list
-
+        _this2.getGrades();
       })["catch"](function (error) {
         _this2.uploadMessage = error.response.data.message || "Error uploading file.";
       });
     },
-    // Method to edit a specific grade
-    editGrade: function editGrade(grade) {
-      this.currentGrade = _objectSpread({}, grade); // Create a copy of the grade for editing
-
-      this.editGradeModel = true; // Show the edit modal
-    },
-    // Method to submit the updated grade
-    // submitUpdatedGrade() {
-    //     this.axios
-    //         .put(
-    //             `/api/v1/grades/${this.currentGrade.id}`,
-    //             this.currentGrade
-    //         )
-    //         .then(response => {
-    //             this.getGrades(); // Refresh the grades list
-    //             this.editGradeModel = false; // Close the modal
-    //         })
-    //         .catch(error => {
-    //             console.error("Error updating grade:", error);
-    //         });
-    // },
-    submitUpdatedGrade: function submitUpdatedGrade() {
+    printGrade: function printGrade() {
       var _this3 = this;
+
+      this.axios.post("/api/v1/print_pdf_classrecord", {}, {
+        responseType: "blob"
+      }).then(function (response) {
+        var url = window.URL.createObjectURL(new Blob([response.data]));
+        var iframe = document.createElement("iframe");
+        iframe.src = url;
+        iframe.style.display = "none";
+        document.body.appendChild(iframe);
+
+        iframe.contentWindow.onload = function () {
+          iframe.contentWindow.print();
+          iframe.contentWindow.close();
+        };
+
+        document.body.removeChild(iframe);
+      })["catch"](function (error) {
+        _this3.uploadMessage = error.response.data.message || "Error printing grades.";
+      });
+    },
+    editGrade: function editGrade(grade) {
+      this.currentGrade = _objectSpread({}, grade);
+      this.editGradeModel = true;
+    },
+    calculateGrade: function calculateGrade() {
+      var writtenScore = this.currentGrade.written || 0;
+      var performanceScore = this.currentGrade.performance || 0;
+      var midtermScore = this.currentGrade.midterm || 0;
+      var finalExamScore = this.currentGrade.finalexam || 0;
+      var maxScores = {
+        written: 10,
+        performance: 40,
+        midterm: 100,
+        finalexam: 100
+      };
+      var weightedWritten = writtenScore / maxScores.written * 15;
+      var weightedPerformance = performanceScore / maxScores.performance * 25;
+      var weightedMidterm = midtermScore / maxScores.midterm * 30;
+      var weightedFinalExam = finalExamScore / maxScores.finalexam * 30;
+      var totalWeightedScore = weightedWritten + weightedPerformance + weightedMidterm + weightedFinalExam;
+      this.currentGrade.total_weighted_score = totalWeightedScore;
+      var finalGrade = 5.0;
+      var remarks = "Failed";
+
+      if (totalWeightedScore >= 94.44) {
+        finalGrade = 1.0;
+        remarks = "Passed";
+      } else if (totalWeightedScore >= 88.89) {
+        finalGrade = 1.25;
+        remarks = "Passed";
+      } else if (totalWeightedScore >= 83.33) {
+        finalGrade = 1.5;
+        remarks = "Passed";
+      } else if (totalWeightedScore >= 77.78) {
+        finalGrade = 1.75;
+        remarks = "Passed";
+      } else if (totalWeightedScore >= 72.22) {
+        finalGrade = 2.0;
+        remarks = "Passed";
+      } else if (totalWeightedScore >= 66.67) {
+        finalGrade = 2.25;
+        remarks = "Passed";
+      } else if (totalWeightedScore >= 61.11) {
+        finalGrade = 2.5;
+        remarks = "Passed";
+      } else if (totalWeightedScore >= 55.56) {
+        finalGrade = 2.75;
+        remarks = "Passed";
+      } else if (totalWeightedScore >= 50.0) {
+        finalGrade = 3.0;
+        remarks = "Passed";
+      }
+
+      this.currentGrade.final_numerical_grade = finalGrade;
+      this.currentGrade.remarks = remarks;
+    },
+    submitUpdatedGrade: function submitUpdatedGrade() {
+      var _this4 = this;
 
       this.axios.put("/api/v1/grades/".concat(this.currentGrade.id), {
         written_total_score: this.currentGrade.written,
         performance_total_score: this.currentGrade.performance,
         midterm_total_score: this.currentGrade.midterm,
-        finalexam_total_score: this.currentGrade.finalexam
+        finalexam_total_score: this.currentGrade.finalexam,
+        total_weighted_score: this.currentGrade.total_weighted_score,
+        final_numerical_grade: this.currentGrade.final_numerical_grade,
+        remarks: this.currentGrade.remarks
       }).then(function (response) {
-        _this3.getGrades(); // Refresh the grades list
+        _this4.getGrades();
 
-
-        _this3.editGradeModel = false; // Close the modal
+        _this4.editGradeModel = false;
       })["catch"](function (error) {
         console.error("Error updating grade:", error);
       });
     },
-    // Method to delete a specific grade
     deleteGrade: function deleteGrade(id) {
-      var _this4 = this;
+      var _this5 = this;
 
       if (confirm("Are you sure you want to delete this grade?")) {
         this.axios["delete"]("/api/v1/grades/".concat(id)).then(function (response) {
-          _this4.getGrades(); // Refresh the grades list
-
+          _this5.getGrades();
         })["catch"](function (error) {
           console.error("Error deleting grade:", error);
         });
       }
-    },
-    // Method to print the grades
-    printGrade: function printGrade() {
-      window.print(); // Use window.print() to print the current page
     }
   },
   mounted: function mounted() {
-    this.getGrades(); // Fetch grades when the component is mounted
+    this.getGrades();
   }
 });
 
@@ -404,7 +331,7 @@ __webpack_require__.r(__webpack_exports__);
 
 var ___CSS_LOADER_EXPORT___ = _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_0___default()(function(i){return i[1]});
 // Module
-___CSS_LOADER_EXPORT___.push([module.id, "\n.modal[data-v-667e0274] {\r\n    z-index: 1050; /* Ensure the modal is above other content */\n}\r\n", ""]);
+___CSS_LOADER_EXPORT___.push([module.id, "\n.modal[data-v-667e0274] {\r\n    z-index: 1050;\n}\r\n", ""]);
 // Exports
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (___CSS_LOADER_EXPORT___);
 
@@ -662,381 +589,6 @@ var render = function() {
       ])
     ]),
     _vm._v(" "),
-    _vm.editGradeModel
-      ? _c(
-          "div",
-          {
-            staticClass: "modal fade show",
-            staticStyle: { display: "block" },
-            attrs: { tabindex: "-1" }
-          },
-          [
-            _c("div", { staticClass: "modal-dialog" }, [
-              _c("div", { staticClass: "modal-content" }, [
-                _c("div", { staticClass: "modal-header" }, [
-                  _c("h5", { staticClass: "modal-title" }, [
-                    _vm._v("Edit Grade")
-                  ]),
-                  _vm._v(" "),
-                  _c(
-                    "button",
-                    {
-                      staticClass: "close",
-                      attrs: { type: "button" },
-                      on: {
-                        click: function($event) {
-                          _vm.editGradeModel = false
-                        }
-                      }
-                    },
-                    [_c("span", [_vm._v("×")])]
-                  )
-                ]),
-                _vm._v(" "),
-                _c("div", { staticClass: "modal-body" }, [
-                  _c(
-                    "form",
-                    {
-                      on: {
-                        submit: function($event) {
-                          $event.preventDefault()
-                          return _vm.submitUpdatedGrade($event)
-                        }
-                      }
-                    },
-                    [
-                      _c("div", { staticClass: "form-row" }, [
-                        _c("div", { staticClass: "form-group col" }, [
-                          _c("label", { attrs: { for: "student_name" } }, [
-                            _vm._v("Student Name")
-                          ]),
-                          _vm._v(" "),
-                          _c("input", {
-                            directives: [
-                              {
-                                name: "model",
-                                rawName: "v-model",
-                                value: _vm.currentGrade.student_name,
-                                expression: "currentGrade.student_name"
-                              }
-                            ],
-                            staticClass: "form-control",
-                            attrs: { type: "text", required: "" },
-                            domProps: { value: _vm.currentGrade.student_name },
-                            on: {
-                              input: function($event) {
-                                if ($event.target.composing) {
-                                  return
-                                }
-                                _vm.$set(
-                                  _vm.currentGrade,
-                                  "student_name",
-                                  $event.target.value
-                                )
-                              }
-                            }
-                          })
-                        ]),
-                        _vm._v(" "),
-                        _c("div", { staticClass: "form-group col" }, [
-                          _c("label", { attrs: { for: "written" } }, [
-                            _vm._v("Written")
-                          ]),
-                          _vm._v(" "),
-                          _c("input", {
-                            directives: [
-                              {
-                                name: "model",
-                                rawName: "v-model.number",
-                                value: _vm.currentGrade.written,
-                                expression: "currentGrade.written",
-                                modifiers: { number: true }
-                              }
-                            ],
-                            staticClass: "form-control",
-                            attrs: { type: "number", required: "" },
-                            domProps: { value: _vm.currentGrade.written },
-                            on: {
-                              input: [
-                                function($event) {
-                                  if ($event.target.composing) {
-                                    return
-                                  }
-                                  _vm.$set(
-                                    _vm.currentGrade,
-                                    "written",
-                                    _vm._n($event.target.value)
-                                  )
-                                },
-                                _vm.calculateGrade
-                              ],
-                              blur: function($event) {
-                                return _vm.$forceUpdate()
-                              }
-                            }
-                          })
-                        ])
-                      ]),
-                      _vm._v(" "),
-                      _c("div", { staticClass: "form-row" }, [
-                        _c("div", { staticClass: "form-group col" }, [
-                          _c("label", { attrs: { for: "performance" } }, [
-                            _vm._v("Performance")
-                          ]),
-                          _vm._v(" "),
-                          _c("input", {
-                            directives: [
-                              {
-                                name: "model",
-                                rawName: "v-model.number",
-                                value: _vm.currentGrade.performance,
-                                expression:
-                                  "\n                                        currentGrade.performance\n                                    ",
-                                modifiers: { number: true }
-                              }
-                            ],
-                            staticClass: "form-control",
-                            attrs: { type: "number", required: "" },
-                            domProps: { value: _vm.currentGrade.performance },
-                            on: {
-                              input: [
-                                function($event) {
-                                  if ($event.target.composing) {
-                                    return
-                                  }
-                                  _vm.$set(
-                                    _vm.currentGrade,
-                                    "performance",
-                                    _vm._n($event.target.value)
-                                  )
-                                },
-                                _vm.calculateGrade
-                              ],
-                              blur: function($event) {
-                                return _vm.$forceUpdate()
-                              }
-                            }
-                          })
-                        ]),
-                        _vm._v(" "),
-                        _c("div", { staticClass: "form-group col" }, [
-                          _c("label", { attrs: { for: "midterm" } }, [
-                            _vm._v("Midterm")
-                          ]),
-                          _vm._v(" "),
-                          _c("input", {
-                            directives: [
-                              {
-                                name: "model",
-                                rawName: "v-model.number",
-                                value: _vm.currentGrade.midterm,
-                                expression: "currentGrade.midterm",
-                                modifiers: { number: true }
-                              }
-                            ],
-                            staticClass: "form-control",
-                            attrs: { type: "number", required: "" },
-                            domProps: { value: _vm.currentGrade.midterm },
-                            on: {
-                              input: [
-                                function($event) {
-                                  if ($event.target.composing) {
-                                    return
-                                  }
-                                  _vm.$set(
-                                    _vm.currentGrade,
-                                    "midterm",
-                                    _vm._n($event.target.value)
-                                  )
-                                },
-                                _vm.calculateGrade
-                              ],
-                              blur: function($event) {
-                                return _vm.$forceUpdate()
-                              }
-                            }
-                          })
-                        ])
-                      ]),
-                      _vm._v(" "),
-                      _c("div", { staticClass: "form-row" }, [
-                        _c("div", { staticClass: "form-group col" }, [
-                          _c("label", { attrs: { for: "finalexam" } }, [
-                            _vm._v("Final Exam")
-                          ]),
-                          _vm._v(" "),
-                          _c("input", {
-                            directives: [
-                              {
-                                name: "model",
-                                rawName: "v-model.number",
-                                value: _vm.currentGrade.finalexam,
-                                expression: "currentGrade.finalexam",
-                                modifiers: { number: true }
-                              }
-                            ],
-                            staticClass: "form-control",
-                            attrs: { type: "number", required: "" },
-                            domProps: { value: _vm.currentGrade.finalexam },
-                            on: {
-                              input: [
-                                function($event) {
-                                  if ($event.target.composing) {
-                                    return
-                                  }
-                                  _vm.$set(
-                                    _vm.currentGrade,
-                                    "finalexam",
-                                    _vm._n($event.target.value)
-                                  )
-                                },
-                                _vm.calculateGrade
-                              ],
-                              blur: function($event) {
-                                return _vm.$forceUpdate()
-                              }
-                            }
-                          })
-                        ]),
-                        _vm._v(" "),
-                        _c("div", { staticClass: "form-group col" }, [
-                          _c(
-                            "label",
-                            { attrs: { for: "total_weighted_score" } },
-                            [_vm._v("Total Weighted Score")]
-                          ),
-                          _vm._v(" "),
-                          _c("input", {
-                            directives: [
-                              {
-                                name: "model",
-                                rawName: "v-model.number",
-                                value: _vm.currentGrade.total_weighted_score,
-                                expression:
-                                  "\n                                        currentGrade.total_weighted_score\n                                    ",
-                                modifiers: { number: true }
-                              }
-                            ],
-                            staticClass: "form-control",
-                            attrs: { type: "number", readonly: "" },
-                            domProps: {
-                              value: _vm.currentGrade.total_weighted_score
-                            },
-                            on: {
-                              input: function($event) {
-                                if ($event.target.composing) {
-                                  return
-                                }
-                                _vm.$set(
-                                  _vm.currentGrade,
-                                  "total_weighted_score",
-                                  _vm._n($event.target.value)
-                                )
-                              },
-                              blur: function($event) {
-                                return _vm.$forceUpdate()
-                              }
-                            }
-                          })
-                        ])
-                      ]),
-                      _vm._v(" "),
-                      _c("div", { staticClass: "form-row" }, [
-                        _c("div", { staticClass: "form-group col" }, [
-                          _c(
-                            "label",
-                            { attrs: { for: "final_numerical_grade" } },
-                            [_vm._v("Final Numerical Grade")]
-                          ),
-                          _vm._v(" "),
-                          _c("input", {
-                            directives: [
-                              {
-                                name: "model",
-                                rawName: "v-model.number",
-                                value: _vm.currentGrade.final_numerical_grade,
-                                expression:
-                                  "\n                                        currentGrade.final_numerical_grade\n                                    ",
-                                modifiers: { number: true }
-                              }
-                            ],
-                            staticClass: "form-control",
-                            attrs: { type: "number", readonly: "" },
-                            domProps: {
-                              value: _vm.currentGrade.final_numerical_grade
-                            },
-                            on: {
-                              input: function($event) {
-                                if ($event.target.composing) {
-                                  return
-                                }
-                                _vm.$set(
-                                  _vm.currentGrade,
-                                  "final_numerical_grade",
-                                  _vm._n($event.target.value)
-                                )
-                              },
-                              blur: function($event) {
-                                return _vm.$forceUpdate()
-                              }
-                            }
-                          })
-                        ]),
-                        _vm._v(" "),
-                        _c("div", { staticClass: "form-group col" }, [
-                          _c("label", { attrs: { for: "remarks" } }, [
-                            _vm._v("Remarks")
-                          ]),
-                          _vm._v(" "),
-                          _c("input", {
-                            directives: [
-                              {
-                                name: "model",
-                                rawName: "v-model",
-                                value: _vm.currentGrade.remarks,
-                                expression: "currentGrade.remarks"
-                              }
-                            ],
-                            staticClass: "form-control",
-                            attrs: { type: "text", required: "" },
-                            domProps: { value: _vm.currentGrade.remarks },
-                            on: {
-                              input: function($event) {
-                                if ($event.target.composing) {
-                                  return
-                                }
-                                _vm.$set(
-                                  _vm.currentGrade,
-                                  "remarks",
-                                  $event.target.value
-                                )
-                              }
-                            }
-                          })
-                        ])
-                      ]),
-                      _vm._v(" "),
-                      _c(
-                        "button",
-                        {
-                          staticClass: "btn btn-primary",
-                          attrs: { type: "submit" }
-                        },
-                        [
-                          _vm._v(
-                            "\n                            Update Grade\n                        "
-                          )
-                        ]
-                      )
-                    ]
-                  )
-                ])
-              ])
-            ])
-          ]
-        )
-      : _vm._e(),
-    _vm._v(" "),
     _vm.addProjectModel
       ? _c(
           "div",
@@ -1075,7 +627,7 @@ var render = function() {
                       on: {
                         submit: function($event) {
                           $event.preventDefault()
-                          return _vm.uploadFile($event)
+                          return _vm.submitExcelFile($event)
                         }
                       }
                     },

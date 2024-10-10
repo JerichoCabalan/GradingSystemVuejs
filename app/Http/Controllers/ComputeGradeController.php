@@ -16,7 +16,7 @@ class ComputeGradeController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index( Request $request)
+    public function index(Request $request)
     {
         $grades = ComputeGrade::all();
         return view('compute_grades.index')->with('grades', $grades);
@@ -75,73 +75,25 @@ class ComputeGradeController extends Controller
     public function update(Request $request, $id)
     {
         $computeGrade = ComputeGrade::find($id);
-    
+
         if (!$computeGrade) {
             return response()->json(['message' => 'Record not found'], 404);
         }
-    
-        $written_total_score = $request->input('written_total_score', 0);
-        $performance_total_score = $request->input('performance_total_score', 0);
-        $midterm_total_score = $request->input('midterm_total_score', 0);
-        $finalexam_total_score = $request->input('finalexam_total_score', 0);
-    
-        $max_written_score = 10;
-        $max_performance_score = 40;
-        $max_midterm_score = 100;
-        $max_finalexam_score = 100;
-    
-        $weighted_written = ($written_total_score / $max_written_score) * 15;
-        $weighted_performance = ($performance_total_score / $max_performance_score) * 25;
-        $weighted_midterm = ($midterm_total_score / $max_midterm_score) * 30;
-        $weighted_finalexam = ($finalexam_total_score / $max_finalexam_score) * 30;
-    
-        $total_weighted_score = $weighted_written + $weighted_performance + $weighted_midterm + $weighted_finalexam;
-    
-        $final_numerical_grade = 5.00;
-        $remarks = 'Failed';
-    
-        if ($total_weighted_score >= 94.44) {
-            $final_numerical_grade = 1.00;
-            $remarks = 'Passed';
-        } elseif ($total_weighted_score >= 88.89) {
-            $final_numerical_grade = 1.25;
-            $remarks = 'Passed';
-        } elseif ($total_weighted_score >= 83.33) {
-            $final_numerical_grade = 1.50;
-            $remarks = 'Passed';
-        } elseif ($total_weighted_score >= 77.78) {
-            $final_numerical_grade = 1.75;
-            $remarks = 'Passed';
-        } elseif ($total_weighted_score >= 72.22) {
-            $final_numerical_grade = 2.00;
-            $remarks = 'Passed';
-        } elseif ($total_weighted_score >= 66.67) {
-            $final_numerical_grade = 2.25;
-            $remarks = 'Passed';
-        } elseif ($total_weighted_score >= 61.11) {
-            $final_numerical_grade = 2.50;
-            $remarks = 'Passed';
-        } elseif ($total_weighted_score >= 55.56) {
-            $final_numerical_grade = 2.75;
-            $remarks = 'Passed';
-        } elseif ($total_weighted_score >= 50.00) {
-            $final_numerical_grade = 3.00;
-            $remarks = 'Passed';
-        }
-    
+
         $computeGrade->update([
-            'written' => $written_total_score,
-            'performance' => $performance_total_score,
-            'midterm' => $midterm_total_score,
-            'finalexam' => $finalexam_total_score,
-            'total_weighted_score' => $total_weighted_score,
-            'final_numerical_grade' => $final_numerical_grade,
-            'remarks' => $remarks,
+            'written' => $request->input('written_total_score', 0),
+            'performance' => $request->input('performance_total_score', 0),
+            'midterm' => $request->input('midterm_total_score', 0),
+            'finalexam' => $request->input('finalexam_total_score', 0),
+            'total_weighted_score' => $request->input('total_weighted_score'),
+            'final_numerical_grade' => $request->input('final_numerical_grade'),
+            'remarks' => $request->input('remarks')
         ]);
-    
+
         return response()->json(['message' => 'Record updated successfully', 'data' => $computeGrade]);
     }
-    
+
+
 
     /**
      * Remove the specified resource from storage.
@@ -177,15 +129,39 @@ class ComputeGradeController extends Controller
 
     public function getGrades()
     {
-        $grades = ComputeGrade::all(); 
-        return response()->json($grades, 200); 
+        $grades = ComputeGrade::all();
+        return response()->json($grades, 200);
     }
 
     public function print_pdf_classrecord()
     {
         $grades = ComputeGrade::all();
-      
-        $pdf = Pdf::loadView('printgradepdf.printpdfgrade', ["grades" => $grades]);
+
+        $semester = '2nd semester';
+        $course_year = 'BSEE III';
+        $course_code = 'STS';
+        $number_of_units = '3';
+        $co_requisite = 'None';
+        $academic_year = '2020-2021';
+        $section = 'FGN01';
+        $course_description = 'Science';
+        $contact_hours = '3';
+        $prerequisite = 'None';
+
+        $pdf = Pdf::loadView('printgradepdf.printpdfgrade', [
+            'grades' => $grades,
+            'semester' => $semester,
+            'course_year' => $course_year,
+            'course_code' => $course_code,
+            'number_of_units' => $number_of_units,
+            'co_requisite' => $co_requisite,
+            'academic_year' => $academic_year,
+            'section' => $section,
+            'course_description' => $course_description,
+            'contact_hours' => $contact_hours,
+            'prerequisite' => $prerequisite,
+        ]);
+
         $pdf->getDomPDF()->setHttpContext(
             stream_context_create([
                 'ssl' => [
@@ -195,9 +171,13 @@ class ComputeGradeController extends Controller
                 ]
             ])
         );
-        $pdf->setPaper('A4', 'portrait');
-        return $pdf->stream();
+
+        $pdf->setPaper('A4', 'landscape');
+
+        return $pdf->stream('class_record.pdf');
     }
+
+
 
 
     public function delete_classrecord(Request $request)

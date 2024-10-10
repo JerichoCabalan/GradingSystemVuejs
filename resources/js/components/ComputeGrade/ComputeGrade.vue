@@ -89,132 +89,6 @@
             </div>
         </div>
 
-        <!-- Edit Grade Modal -->
-        <div
-            v-if="editGradeModel"
-            class="modal fade show"
-            style="display: block;"
-            tabindex="-1"
-        >
-            <div class="modal-dialog">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title">Edit Grade</h5>
-                        <button
-                            type="button"
-                            class="close"
-                            @click="editGradeModel = false"
-                        >
-                            <span>&times;</span>
-                        </button>
-                    </div>
-                    <div class="modal-body">
-                        <form @submit.prevent="submitUpdatedGrade">
-                            <div class="form-row">
-                                <div class="form-group col">
-                                    <label for="student_name"
-                                        >Student Name</label
-                                    >
-                                    <input
-                                        type="text"
-                                        class="form-control"
-                                        v-model="currentGrade.student_name"
-                                        required
-                                    />
-                                </div>
-                                <div class="form-group col">
-                                    <label for="written">Written</label>
-                                    <input
-                                        type="number"
-                                        class="form-control"
-                                        v-model.number="currentGrade.written"
-                                        @input="calculateGrade"
-                                        required
-                                    />
-                                </div>
-                            </div>
-                            <div class="form-row">
-                                <div class="form-group col">
-                                    <label for="performance">Performance</label>
-                                    <input
-                                        type="number"
-                                        class="form-control"
-                                        v-model.number="
-                                            currentGrade.performance
-                                        "
-                                        @input="calculateGrade"
-                                        required
-                                    />
-                                </div>
-                                <div class="form-group col">
-                                    <label for="midterm">Midterm</label>
-                                    <input
-                                        type="number"
-                                        class="form-control"
-                                        v-model.number="currentGrade.midterm"
-                                        @input="calculateGrade"
-                                        required
-                                    />
-                                </div>
-                            </div>
-                            <div class="form-row">
-                                <div class="form-group col">
-                                    <label for="finalexam">Final Exam</label>
-                                    <input
-                                        type="number"
-                                        class="form-control"
-                                        v-model.number="currentGrade.finalexam"
-                                        @input="calculateGrade"
-                                        required
-                                    />
-                                </div>
-                                <div class="form-group col">
-                                    <label for="total_weighted_score"
-                                        >Total Weighted Score</label
-                                    >
-                                    <input
-                                        type="number"
-                                        class="form-control"
-                                        v-model.number="
-                                            currentGrade.total_weighted_score
-                                        "
-                                        readonly
-                                    />
-                                </div>
-                            </div>
-                            <div class="form-row">
-                                <div class="form-group col">
-                                    <label for="final_numerical_grade"
-                                        >Final Numerical Grade</label
-                                    >
-                                    <input
-                                        type="number"
-                                        class="form-control"
-                                        v-model.number="
-                                            currentGrade.final_numerical_grade
-                                        "
-                                        readonly
-                                    />
-                                </div>
-                                <div class="form-group col">
-                                    <label for="remarks">Remarks</label>
-                                    <input
-                                        type="text"
-                                        class="form-control"
-                                        v-model="currentGrade.remarks"
-                                        required
-                                    />
-                                </div>
-                            </div>
-                            <button type="submit" class="btn btn-primary">
-                                Update Grade
-                            </button>
-                        </form>
-                    </div>
-                </div>
-            </div>
-        </div>
-
         <!-- Upload Modal -->
         <div
             v-if="addProjectModel"
@@ -235,7 +109,7 @@
                         </button>
                     </div>
                     <div class="modal-body">
-                        <form @submit.prevent="uploadFile">
+                        <form @submit.prevent="submitExcelFile">
                             <div class="form-group">
                                 <input
                                     type="file"
@@ -261,16 +135,15 @@
 export default {
     data() {
         return {
-            addProjectModel: false, // For opening/closing the upload modal
-            editGradeModel: false, // For opening/closing the edit modal
-            selectedFile: null, // Store the selected file for upload
-            uploadMessage: null, // To store success/error messages
-            grades: [], // Store the grades fetched from the API
-            currentGrade: null // Store the current grade being edited
+            addProjectModel: false,
+            editGradeModel: false,
+            selectedFile: null,
+            uploadMessage: null,
+            grades: [],
+            currentGrade: null
         };
     },
     methods: {
-        // Method to fetch grades from the API
         getGrades() {
             this.axios
                 .get("/api/v1/grades")
@@ -282,22 +155,30 @@ export default {
                 });
         },
 
-        // Method to handle file change for upload
         onFileChange(event) {
             this.selectedFile = event.target.files[0];
         },
 
-        // Method to upload the selected file
-        uploadFile() {
-            const formData = new FormData();
+        submitExcelFile() {
+            if (!this.selectedFile) {
+                this.uploadMessage = "Please select a file before uploading.";
+                return;
+            }
+
+            let formData = new FormData();
             formData.append("file", this.selectedFile);
 
             this.axios
-                .post("/api/v1/grades/upload", formData)
+                .post("/api/v1/import_excel_classrecord", formData, {
+                    headers: {
+                        "Content-Type": "multipart/form-data"
+                    }
+                })
                 .then(response => {
                     this.uploadMessage = response.data.message;
-                    this.addProjectModel = false; // Close the modal
-                    this.getGrades(); // Refresh the grades list
+                    this.addProjectModel = false;
+                    this.selectedFile = null;
+                    this.getGrades();
                 })
                 .catch(error => {
                     this.uploadMessage =
@@ -305,27 +186,102 @@ export default {
                 });
         },
 
-        // Method to edit a specific grade
-        editGrade(grade) {
-            this.currentGrade = { ...grade }; // Create a copy of the grade for editing
-            this.editGradeModel = true; // Show the edit modal
+        printGrade() {
+            this.axios
+                .post(
+                    "/api/v1/print_pdf_classrecord",
+                    {},
+                    {
+                        responseType: "blob"
+                    }
+                )
+                .then(response => {
+                    const url = window.URL.createObjectURL(
+                        new Blob([response.data])
+                    );
+                    const iframe = document.createElement("iframe");
+                    iframe.src = url;
+                    iframe.style.display = "none";
+                    document.body.appendChild(iframe);
+                    iframe.contentWindow.onload = function() {
+                        iframe.contentWindow.print();
+                        iframe.contentWindow.close();
+                    };
+                    document.body.removeChild(iframe);
+                })
+                .catch(error => {
+                    this.uploadMessage =
+                        error.response.data.message || "Error printing grades.";
+                });
         },
 
-        // Method to submit the updated grade
-        // submitUpdatedGrade() {
-        //     this.axios
-        //         .put(
-        //             `/api/v1/grades/${this.currentGrade.id}`,
-        //             this.currentGrade
-        //         )
-        //         .then(response => {
-        //             this.getGrades(); // Refresh the grades list
-        //             this.editGradeModel = false; // Close the modal
-        //         })
-        //         .catch(error => {
-        //             console.error("Error updating grade:", error);
-        //         });
-        // },
+        editGrade(grade) {
+            this.currentGrade = { ...grade };
+            this.editGradeModel = true;
+        },
+
+        calculateGrade() {
+            const writtenScore = this.currentGrade.written || 0;
+            const performanceScore = this.currentGrade.performance || 0;
+            const midtermScore = this.currentGrade.midterm || 0;
+            const finalExamScore = this.currentGrade.finalexam || 0;
+
+            const maxScores = {
+                written: 10,
+                performance: 40,
+                midterm: 100,
+                finalexam: 100
+            };
+
+            const weightedWritten = (writtenScore / maxScores.written) * 15;
+            const weightedPerformance =
+                (performanceScore / maxScores.performance) * 25;
+            const weightedMidterm = (midtermScore / maxScores.midterm) * 30;
+            const weightedFinalExam =
+                (finalExamScore / maxScores.finalexam) * 30;
+
+            const totalWeightedScore =
+                weightedWritten +
+                weightedPerformance +
+                weightedMidterm +
+                weightedFinalExam;
+            this.currentGrade.total_weighted_score = totalWeightedScore;
+
+            let finalGrade = 5.0;
+            let remarks = "Failed";
+
+            if (totalWeightedScore >= 94.44) {
+                finalGrade = 1.0;
+                remarks = "Passed";
+            } else if (totalWeightedScore >= 88.89) {
+                finalGrade = 1.25;
+                remarks = "Passed";
+            } else if (totalWeightedScore >= 83.33) {
+                finalGrade = 1.5;
+                remarks = "Passed";
+            } else if (totalWeightedScore >= 77.78) {
+                finalGrade = 1.75;
+                remarks = "Passed";
+            } else if (totalWeightedScore >= 72.22) {
+                finalGrade = 2.0;
+                remarks = "Passed";
+            } else if (totalWeightedScore >= 66.67) {
+                finalGrade = 2.25;
+                remarks = "Passed";
+            } else if (totalWeightedScore >= 61.11) {
+                finalGrade = 2.5;
+                remarks = "Passed";
+            } else if (totalWeightedScore >= 55.56) {
+                finalGrade = 2.75;
+                remarks = "Passed";
+            } else if (totalWeightedScore >= 50.0) {
+                finalGrade = 3.0;
+                remarks = "Passed";
+            }
+
+            this.currentGrade.final_numerical_grade = finalGrade;
+            this.currentGrade.remarks = remarks;
+        },
 
         submitUpdatedGrade() {
             this.axios
@@ -333,44 +289,43 @@ export default {
                     written_total_score: this.currentGrade.written,
                     performance_total_score: this.currentGrade.performance,
                     midterm_total_score: this.currentGrade.midterm,
-                    finalexam_total_score: this.currentGrade.finalexam
+                    finalexam_total_score: this.currentGrade.finalexam,
+                    total_weighted_score: this.currentGrade
+                        .total_weighted_score,
+                    final_numerical_grade: this.currentGrade
+                        .final_numerical_grade,
+                    remarks: this.currentGrade.remarks
                 })
                 .then(response => {
-                    this.getGrades(); // Refresh the grades list
-                    this.editGradeModel = false; // Close the modal
+                    this.getGrades();
+                    this.editGradeModel = false;
                 })
                 .catch(error => {
                     console.error("Error updating grade:", error);
                 });
         },
 
-        // Method to delete a specific grade
         deleteGrade(id) {
             if (confirm("Are you sure you want to delete this grade?")) {
                 this.axios
                     .delete(`/api/v1/grades/${id}`)
                     .then(response => {
-                        this.getGrades(); // Refresh the grades list
+                        this.getGrades();
                     })
                     .catch(error => {
                         console.error("Error deleting grade:", error);
                     });
             }
-        },
-
-        // Method to print the grades
-        printGrade() {
-            window.print(); // Use window.print() to print the current page
         }
     },
     mounted() {
-        this.getGrades(); // Fetch grades when the component is mounted
+        this.getGrades();
     }
 };
 </script>
 
 <style scoped>
 .modal {
-    z-index: 1050; /* Ensure the modal is above other content */
+    z-index: 1050;
 }
 </style>
