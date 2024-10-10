@@ -192,22 +192,19 @@ export default {
                     "/api/v1/print_pdf_classrecord",
                     {},
                     {
-                        responseType: "blob"
+                        responseType: "blob" // Important for receiving binary data like PDF
                     }
                 )
                 .then(response => {
                     const url = window.URL.createObjectURL(
                         new Blob([response.data])
                     );
-                    const iframe = document.createElement("iframe");
-                    iframe.src = url;
-                    iframe.style.display = "none";
-                    document.body.appendChild(iframe);
-                    iframe.contentWindow.onload = function() {
-                        iframe.contentWindow.print();
-                        iframe.contentWindow.close();
-                    };
-                    document.body.removeChild(iframe);
+                    const link = document.createElement("a");
+                    link.href = url;
+                    link.setAttribute("download", "Grades.pdf"); // Specify the file name for download
+                    document.body.appendChild(link);
+                    link.click(); // Auto-click to open/download the PDF
+                    document.body.removeChild(link);
                 })
                 .catch(error => {
                     this.uploadMessage =
